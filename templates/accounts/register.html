@@ -1,0 +1,334 @@
+{% extends "base.html" %}
+
+{% block title %}Register | QuickShop{% endblock %}
+
+{% block content %}
+<style>
+  .register-shell{
+    min-height: 82vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:40px 16px;
+    background:
+      radial-gradient(circle at top left, rgba(124,58,237,0.10), transparent 28%),
+      radial-gradient(circle at bottom right, rgba(59,130,246,0.10), transparent 28%);
+  }
+
+  .register-card{
+    width:100%;
+    max-width:980px;
+    display:grid;
+    grid-template-columns: 1.05fr 1fr;
+    background:#fff;
+    border-radius:28px;
+    overflow:hidden;
+    box-shadow:0 24px 60px rgba(0,0,0,0.10);
+    border:1px solid rgba(0,0,0,0.06);
+  }
+
+  .register-left{
+    background:linear-gradient(135deg, #0f172a, #1e3a8a, #7c3aed);
+    color:#fff;
+    padding:46px 38px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    position:relative;
+    overflow:hidden;
+  }
+
+  .register-left::before,
+  .register-left::after{
+    content:"";
+    position:absolute;
+    border-radius:999px;
+    background:rgba(255,255,255,0.08);
+  }
+
+  .register-left::before{
+    width:220px;
+    height:220px;
+    top:-60px;
+    right:-60px;
+  }
+
+  .register-left::after{
+    width:180px;
+    height:180px;
+    bottom:-70px;
+    left:-40px;
+  }
+
+  .brand-badge{
+    display:inline-block;
+    background:rgba(255,255,255,0.12);
+    border:1px solid rgba(255,255,255,0.16);
+    padding:8px 14px;
+    border-radius:999px;
+    font-size:13px;
+    font-weight:800;
+    letter-spacing:0.4px;
+    margin-bottom:16px;
+    width:fit-content;
+  }
+
+  .register-left h1{
+    font-size:42px;
+    line-height:1.1;
+    margin:0 0 14px 0;
+    font-weight:900;
+  }
+
+  .register-left p{
+    margin:0;
+    font-size:16px;
+    line-height:1.8;
+    color:rgba(255,255,255,0.90);
+    max-width:430px;
+  }
+
+  .feature-list{
+    margin-top:26px;
+    display:grid;
+    gap:12px;
+  }
+
+  .feature-item{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-weight:700;
+    color:rgba(255,255,255,0.95);
+  }
+
+  .feature-dot{
+    width:30px;
+    height:30px;
+    display:grid;
+    place-items:center;
+    border-radius:50%;
+    background:rgba(255,255,255,0.12);
+    border:1px solid rgba(255,255,255,0.16);
+    font-size:14px;
+  }
+
+  .register-right{
+    padding:38px 34px;
+    background:#fff;
+  }
+
+  .form-title{
+    margin:0;
+    font-size:34px;
+    font-weight:900;
+    color:#0f172a;
+  }
+
+  .form-sub{
+    margin:8px 0 22px 0;
+    color:#6b7280;
+    font-size:15px;
+    font-weight:500;
+  }
+
+  .auth-error{
+    background:#fff1f2;
+    border:1px solid #fecdd3;
+    color:#be123c;
+    padding:12px 14px;
+    border-radius:14px;
+    margin-bottom:16px;
+    font-weight:700;
+  }
+
+  .role-switch{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+    margin-bottom:18px;
+  }
+
+  .role-option input{
+    display:none;
+  }
+
+  .role-option label{
+    display:block;
+    text-align:center;
+    padding:13px 14px;
+    border-radius:14px;
+    border:1px solid #d1d5db;
+    background:#f8fafc;
+    font-weight:800;
+    cursor:pointer;
+    transition:0.2s;
+  }
+
+  .role-option input:checked + label{
+    background:linear-gradient(135deg, #0f172a, #1d4ed8);
+    color:#fff;
+    border-color:#0f172a;
+    box-shadow:0 10px 24px rgba(29,78,216,0.22);
+  }
+
+  .form-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+  }
+
+  .form-group{
+    margin-bottom:14px;
+  }
+
+  .form-group.full{
+    grid-column:1 / -1;
+  }
+
+  .form-label{
+    display:block;
+    margin-bottom:7px;
+    font-weight:800;
+    color:#111827;
+    font-size:14px;
+  }
+
+  .form-input{
+    width:100%;
+    padding:13px 14px;
+    border:1px solid #d1d5db;
+    border-radius:14px;
+    font-size:15px;
+    outline:none;
+    background:#f8fafc;
+    transition:0.2s;
+  }
+
+  .form-input:focus{
+    border-color:#7c3aed;
+    background:#fff;
+    box-shadow:0 0 0 4px rgba(124,58,237,0.10);
+  }
+
+  .submit-btn{
+    width:100%;
+    border:none;
+    background:linear-gradient(135deg, #0f172a, #111827);
+    color:#fff;
+    padding:14px 16px;
+    border-radius:16px;
+    font-size:16px;
+    font-weight:900;
+    cursor:pointer;
+    margin-top:8px;
+    box-shadow:0 12px 26px rgba(17,24,39,0.20);
+  }
+
+  .bottom-link{
+    margin-top:18px;
+    text-align:center;
+  }
+
+  .bottom-link a{
+    text-decoration:none;
+    font-weight:800;
+    color:#7c3aed;
+    font-size:15px;
+  }
+
+  @media (max-width: 920px){
+    .register-card{
+      grid-template-columns:1fr;
+    }
+    .register-left{
+      padding:32px 26px;
+    }
+    .register-right{
+      padding:28px 22px;
+    }
+  }
+
+  @media (max-width: 620px){
+    .form-grid{
+      grid-template-columns:1fr;
+    }
+  }
+</style>
+
+<div class="register-shell">
+  <div class="register-card">
+
+    <div class="register-left">
+      <span class="brand-badge">QuickShop Premium Access</span>
+      <h1>Create your account</h1>
+      <p>
+        Join QuickShop and start shopping smarter or selling faster.
+        Choose your role and unlock a smooth modern ecommerce experience.
+      </p>
+
+      <div class="feature-list">
+        <div class="feature-item"><span class="feature-dot">✓</span> Wishlist and smart cart for consumers</div>
+        <div class="feature-item"><span class="feature-dot">✓</span> Product upload dashboard for sellers</div>
+        <div class="feature-item"><span class="feature-dot">✓</span> Faster checkout and order management</div>
+      </div>
+    </div>
+
+    <div class="register-right">
+      <h2 class="form-title">Register</h2>
+      <p class="form-sub">Create your QuickShop account in a few steps.</p>
+
+      {% if error %}
+        <div class="auth-error">{{ error }}</div>
+      {% endif %}
+
+      <form method="post">
+        {% csrf_token %}
+
+        <div class="role-switch">
+          <div class="role-option">
+            <input type="radio" id="reg_consumer" name="role" value="consumer"
+                   {% if selected_role != 'seller' %}checked{% endif %}>
+            <label for="reg_consumer">Consumer</label>
+          </div>
+
+          <div class="role-option">
+            <input type="radio" id="reg_seller" name="role" value="seller"
+                   {% if selected_role == 'seller' %}checked{% endif %}>
+            <label for="reg_seller">Seller</label>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group full">
+            <label class="form-label">Email / Username</label>
+            <input class="form-input" type="text" name="username" placeholder="Enter your email or username" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Mobile Number</label>
+            <input class="form-input" type="text" name="mobile" placeholder="Enter mobile number" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <input class="form-input" type="password" name="password" placeholder="Enter password" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Confirm Password</label>
+            <input class="form-input" type="password" name="confirm_password" placeholder="Confirm password" required>
+          </div>
+        </div>
+
+        <button class="submit-btn" type="submit">Create Account</button>
+      </form>
+
+      <div class="bottom-link">
+        <a href="{% url 'login' %}">Back to login</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

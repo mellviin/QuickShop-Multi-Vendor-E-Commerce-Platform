@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}My Orders | QuickShop{% endblock %}
+
+{% block content %}
+<style>
+  .title{ font-size:34px; font-weight:900; margin-bottom:18px; }
+  .list{ display:grid; gap:16px; }
+  .card{ background:#fff; border-radius:22px; padding:18px; display:grid; grid-template-columns:100px 1fr; gap:16px; box-shadow:0 14px 30px rgba(0,0,0,0.08); }
+  .card img{ width:100px; height:100px; object-fit:cover; border-radius:16px; }
+  .name{ font-size:20px; font-weight:900; margin:0 0 8px 0; }
+  .meta{ color:#6b7280; line-height:1.8; font-weight:700; }
+  .status{ display:inline-block; margin-top:10px; padding:8px 12px; border-radius:999px; background:#dbeafe; color:#1d4ed8; font-size:12px; font-weight:900; }
+</style>
+
+<h1 class="title">My Orders</h1>
+
+<div class="list">
+  {% for order in orders %}
+    <div class="card">
+      {% if order.product.image %}
+        <img src="{{ order.product.image.url }}" alt="{{ order.product.name }}">
+      {% else %}
+        <img src="https://via.placeholder.com/100?text=No+Img" alt="{{ order.product.name }}">
+      {% endif %}
+      <div>
+        <h3 class="name">{{ order.product.name }}</h3>
+        <div class="meta">
+          Price: ${{ order.total_price }}<br>
+          Quantity: {{ order.quantity }}<br>
+          Address: {{ order.address }}, {{ order.city }} - {{ order.pincode }}<br>
+          Slot: {{ order.delivery_slot }}<br>
+          Payment: {{ order.get_payment_method_display }}
+        </div>
+        <span class="status">{{ order.get_status_display }}</span>
+      </div>
+    </div>
+  {% empty %}
+    <p>No orders yet.</p>
+  {% endfor %}
+</div>
+{% endblock %}

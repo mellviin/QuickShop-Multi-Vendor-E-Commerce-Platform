@@ -1,0 +1,787 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Seller Dashboard | QuickShop{% endblock %}
+
+{% block content %}
+<style>
+  * { box-sizing: border-box; }
+
+  .seller-page {
+    max-width: 1350px;
+    margin: 20px auto 40px;
+  }
+
+  .dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    background: linear-gradient(135deg, #0f172a, #1e293b);
+    color: white;
+    border-radius: 24px;
+    padding: 30px;
+    margin-bottom: 24px;
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.16);
+  }
+
+  .dashboard-header h1 {
+    margin: 0 0 10px;
+    font-size: 36px;
+    font-weight: 900;
+  }
+
+  .dashboard-header p {
+    margin: 0;
+    color: #cbd5e1;
+    font-size: 15px;
+  }
+
+  .live-box {
+    min-width: 230px;
+    background: rgba(255,255,255,0.09);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 18px;
+    padding: 16px;
+    text-align: center;
+  }
+
+  .live-box .small {
+    color: #cbd5e1;
+    font-size: 14px;
+    margin-bottom: 8px;
+  }
+
+  .live-box .big {
+    font-size: 34px;
+    font-weight: 900;
+  }
+
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 18px;
+    margin-bottom: 24px;
+  }
+
+  .stat-card {
+    background: white;
+    border-radius: 20px;
+    padding: 22px;
+    box-shadow: 0 8px 22px rgba(0,0,0,0.07);
+  }
+
+  .stat-title {
+    color: #64748b;
+    font-size: 13px;
+    font-weight: 800;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .stat-value {
+    font-size: 30px;
+    font-weight: 900;
+    color: #0f172a;
+  }
+
+  .main-grid {
+    display: grid;
+    grid-template-columns: 1.35fr 0.85fr;
+    gap: 24px;
+    margin-bottom: 28px;
+  }
+
+  .panel {
+    background: white;
+    border-radius: 24px;
+    padding: 24px;
+    box-shadow: 0 8px 22px rgba(0,0,0,0.07);
+  }
+
+  .panel-title {
+    font-size: 24px;
+    font-weight: 900;
+    margin: 0 0 18px;
+    color: #0f172a;
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .form-group.full {
+    grid-column: 1 / -1;
+  }
+
+  label {
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 800;
+    color: #334155;
+  }
+
+  input, select, textarea {
+    width: 100%;
+    padding: 13px 14px;
+    border: 1px solid #dbe2ea;
+    background: #f8fafc;
+    border-radius: 14px;
+    font-size: 15px;
+    outline: none;
+  }
+
+  input:focus, select:focus, textarea:focus {
+    border-color: #2563eb;
+    background: white;
+    box-shadow: 0 0 0 4px rgba(37,99,235,0.08);
+  }
+
+  textarea {
+    min-height: 120px;
+    resize: vertical;
+  }
+
+  .btn-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary, .btn-secondary, .btn-danger, .btn-small {
+    border: none;
+    border-radius: 12px;
+    font-weight: 800;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: white;
+    padding: 14px 18px;
+    font-size: 15px;
+  }
+
+  .btn-secondary {
+    background: #e2e8f0;
+    color: #0f172a;
+    padding: 14px 18px;
+    font-size: 15px;
+  }
+
+  .btn-danger {
+    background: #ef4444;
+    color: white;
+    padding: 10px 14px;
+    font-size: 13px;
+  }
+
+  .btn-small {
+    background: #0f172a;
+    color: white;
+    padding: 10px 14px;
+    font-size: 13px;
+  }
+
+  .preview-box {
+    margin-top: 12px;
+    border: 1px dashed #cbd5e1;
+    background: #f8fafc;
+    border-radius: 16px;
+    padding: 12px;
+    text-align: center;
+  }
+
+  .preview-box img {
+    max-width: 100%;
+    max-height: 220px;
+    border-radius: 12px;
+    object-fit: cover;
+    display: none;
+    margin: auto;
+  }
+
+  .notification-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    border-radius: 16px;
+    background: #eff6ff;
+    border: 1px solid #dbeafe;
+    margin-bottom: 16px;
+  }
+
+  .dot {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: #22c55e;
+    animation: pulse 1.4s infinite;
+    flex-shrink: 0;
+  }
+
+  @keyframes pulse {
+    0% { transform: scale(1); opacity: 1; }
+    70% { transform: scale(1.6); opacity: 0.35; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  .notif-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    max-height: 470px;
+    overflow-y: auto;
+  }
+
+  .notif-item {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 14px;
+  }
+
+  .notif-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .notif-title {
+    font-size: 15px;
+    font-weight: 900;
+    color: #0f172a;
+  }
+
+  .notif-status {
+    background: #e2e8f0;
+    color: #0f172a;
+    border-radius: 999px;
+    padding: 5px 10px;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .notif-msg {
+    color: #475569;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .notif-time {
+    margin-top: 8px;
+    color: #94a3b8;
+    font-size: 12px;
+  }
+
+  .section-title {
+    font-size: 28px;
+    font-weight: 900;
+    color: #0f172a;
+    margin: 28px 0 16px;
+  }
+
+  .filter-bar {
+    background: white;
+    border-radius: 20px;
+    padding: 18px;
+    box-shadow: 0 8px 22px rgba(0,0,0,0.07);
+    margin-bottom: 18px;
+  }
+
+  .filter-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr auto;
+    gap: 14px;
+    align-items: end;
+  }
+
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 20px;
+  }
+
+  .product-card {
+    background: white;
+    border-radius: 22px;
+    overflow: hidden;
+    box-shadow: 0 8px 22px rgba(0,0,0,0.07);
+  }
+
+  .product-card img {
+    width: 100%;
+    height: 240px;
+    object-fit: cover;
+    background: #f1f5f9;
+  }
+
+  .product-body {
+    padding: 16px;
+  }
+
+  .product-category {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 900;
+    text-transform: uppercase;
+    background: #eff6ff;
+    color: #1d4ed8;
+    border-radius: 999px;
+    padding: 6px 10px;
+    margin-bottom: 10px;
+  }
+
+  .product-name {
+    font-size: 20px;
+    font-weight: 900;
+    color: #0f172a;
+    margin-bottom: 6px;
+  }
+
+  .product-price {
+    font-size: 22px;
+    font-weight: 900;
+    margin-bottom: 6px;
+  }
+
+  .product-stock {
+    color: #475569;
+    font-size: 14px;
+    font-weight: 800;
+    margin-bottom: 8px;
+  }
+
+  .product-desc {
+    color: #64748b;
+    font-size: 14px;
+    line-height: 1.5;
+    min-height: 42px;
+  }
+
+  .card-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 14px;
+    flex-wrap: wrap;
+  }
+
+  .orders-panel {
+    background: white;
+    border-radius: 22px;
+    box-shadow: 0 8px 22px rgba(0,0,0,0.07);
+    overflow: hidden;
+  }
+
+  .table-wrap {
+    overflow-x: auto;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th, td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid #eef2f7;
+    font-size: 14px;
+    vertical-align: middle;
+  }
+
+  th {
+    background: #f8fafc;
+    color: #0f172a;
+    font-weight: 900;
+  }
+
+  td {
+    color: #475569;
+  }
+
+  .status-badge {
+    display: inline-block;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: #e2e8f0;
+    color: #0f172a;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .status-form {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    min-width: 220px;
+  }
+
+  .status-form select {
+    min-width: 140px;
+    padding: 9px 10px;
+    border-radius: 10px;
+  }
+
+  .status-form button {
+    padding: 9px 12px;
+    border-radius: 10px;
+    background: #0f172a;
+    color: white;
+    border: none;
+    font-size: 12px;
+    font-weight: 800;
+    cursor: pointer;
+  }
+
+  .empty-box {
+    background: white;
+    border: 1px dashed #cbd5e1;
+    border-radius: 18px;
+    padding: 30px;
+    text-align: center;
+    color: #64748b;
+  }
+
+  @media (max-width: 1150px) {
+    .stats-row {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .main-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 800px) {
+    .dashboard-header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .filter-grid,
+    .form-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .stats-row {
+      grid-template-columns: 1fr;
+    }
+
+    .card-actions,
+    .btn-row,
+    .status-form {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  }
+</style>
+
+<div class="seller-page">
+  <div class="dashboard-header">
+    <div>
+      <h1>Seller Dashboard</h1>
+      <p>Manage your products, monitor revenue, update orders, and track store performance in real time.</p>
+    </div>
+
+    <div class="live-box">
+      <div class="small">Live Notifications</div>
+      <div class="big">{{ seller_notification_count }}</div>
+    </div>
+  </div>
+
+  <div class="stats-row" id="revenue-section">
+    <div class="stat-card">
+      <div class="stat-title">Total Products</div>
+      <div class="stat-value">{{ total_products }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-title">Total Orders</div>
+      <div class="stat-value">{{ total_orders }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-title">Placed Orders</div>
+      <div class="stat-value">{{ placed_orders }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-title">Shipped Orders</div>
+      <div class="stat-value">{{ shipped_orders }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-title">Revenue</div>
+      <div class="stat-value">₹{{ total_revenue }}</div>
+    </div>
+  </div>
+
+  <div class="main-grid">
+    <div class="panel">
+      <h2 class="panel-title">
+        {% if edit_product %}Edit Product{% else %}Add New Product{% endif %}
+      </h2>
+
+      <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="{% if edit_product %}edit_product{% else %}add_product{% endif %}">
+        {% if edit_product %}
+          <input type="hidden" name="product_id" value="{{ edit_product.id }}">
+        {% endif %}
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="name">Product Name</label>
+            <input type="text" id="name" name="name" value="{% if edit_product %}{{ edit_product.name }}{% endif %}" placeholder="Enter product name" required>
+          </div>
+
+          <div class="form-group">
+            <label for="category">Category</label>
+            <select id="category" name="category" required>
+              <option value="">Select category</option>
+              <option value="mens" {% if edit_product and edit_product.category == "mens" %}selected{% endif %}>Mens</option>
+              <option value="womens" {% if edit_product and edit_product.category == "womens" %}selected{% endif %}>Womens</option>
+              <option value="jewelry" {% if edit_product and edit_product.category == "jewelry" %}selected{% endif %}>Jewelry</option>
+              <option value="perfume" {% if edit_product and edit_product.category == "perfume" %}selected{% endif %}>Perfume</option>
+              <option value="electronics" {% if edit_product and edit_product.category == "electronics" %}selected{% endif %}>Electronics</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="price">Price</label>
+            <input type="number" id="price" name="price" step="0.01" value="{% if edit_product %}{{ edit_product.price }}{% endif %}" placeholder="Enter price" required>
+          </div>
+
+          <div class="form-group">
+            <label for="quantity">Stock Quantity</label>
+            <input type="number" id="quantity" name="quantity" min="1" value="{% if edit_product %}{{ edit_product.quantity }}{% endif %}" placeholder="Enter stock quantity" required>
+          </div>
+
+          <div class="form-group full">
+            <label for="description">Description</label>
+            <textarea id="description" name="description" placeholder="Write product description" required>{% if edit_product %}{{ edit_product.description }}{% endif %}</textarea>
+          </div>
+
+          <div class="form-group full">
+            <label for="image">Upload Product Image</label>
+            <input type="file" id="image" name="image" accept="image/*">
+            <div class="preview-box">
+              <img id="imagePreview"
+                   src="{% if edit_product and edit_product.image %}{{ edit_product.image.url }}{% endif %}"
+                   style="{% if edit_product and edit_product.image %}display:block;{% endif %}"
+                   alt="Preview">
+              <div id="previewText" {% if edit_product and edit_product.image %}style="display:none;"{% endif %}>
+                Image preview will appear here
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group full">
+            <div class="btn-row">
+              <button type="submit" class="btn-primary">
+                {% if edit_product %}Update Product{% else %}Add Product{% endif %}
+              </button>
+              {% if edit_product %}
+                <a href="/seller/dashboard/" class="btn-secondary">Cancel Edit</a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <div class="panel">
+      <h2 class="panel-title">Notification Center</h2>
+
+      <div class="notification-bar">
+        <div class="dot"></div>
+        <div>
+          <strong>Store Activity Live</strong><br>
+          <span>You have {{ seller_notification_count }} recent order notification{{ seller_notification_count|pluralize }}.</span>
+        </div>
+      </div>
+
+      {% if seller_notifications %}
+        <div class="notif-list">
+          {% for note in seller_notifications %}
+            <div class="notif-item">
+              <div class="notif-top">
+                <div class="notif-title">{{ note.icon }} {{ note.title }}</div>
+                <div class="notif-status">{{ note.status }}</div>
+              </div>
+              <div class="notif-msg">{{ note.message }}</div>
+              <div class="notif-time">{{ note.time|date:"M d, Y h:i A" }}</div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="empty-box">No recent store notifications yet.</div>
+      {% endif %}
+    </div>
+  </div>
+
+  <h2 class="section-title">Search & Filter Products</h2>
+
+  <div class="filter-bar">
+    <form method="GET">
+      <div class="filter-grid">
+        <div class="form-group">
+          <label for="search">Search Product</label>
+          <input type="text" id="search" name="search" value="{{ search_query }}" placeholder="Search by product name">
+        </div>
+
+        <div class="form-group">
+          <label for="categoryFilter">Filter Category</label>
+          <select id="categoryFilter" name="category">
+            <option value="">All Categories</option>
+            <option value="mens" {% if category_filter == "mens" %}selected{% endif %}>Mens</option>
+            <option value="womens" {% if category_filter == "womens" %}selected{% endif %}>Womens</option>
+            <option value="jewelry" {% if category_filter == "jewelry" %}selected{% endif %}>Jewelry</option>
+            <option value="perfume" {% if category_filter == "perfume" %}selected{% endif %}>Perfume</option>
+            <option value="electronics" {% if category_filter == "electronics" %}selected{% endif %}>Electronics</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="orderStatus">Filter Orders</label>
+          <select id="orderStatus" name="order_status">
+            <option value="">All Order Status</option>
+            {% for value, label in order_status_choices %}
+              <option value="{{ value }}" {% if order_status_filter == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="form-group">
+          <button type="submit" class="btn-primary">Apply</button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <h2 class="section-title" id="my-products">My Products</h2>
+
+  {% if seller_products %}
+    <div class="products-grid">
+      {% for product in seller_products %}
+        <div class="product-card">
+          {% if product.image %}
+            <img src="{{ product.image.url }}" alt="{{ product.name }}">
+          {% else %}
+            <img src="{% static 'assets/images/products/1.jpg' %}" alt="No Image">
+          {% endif %}
+
+          <div class="product-body">
+            <div class="product-category">{{ product.category }}</div>
+            <div class="product-name">{{ product.name }}</div>
+            <div class="product-price">₹{{ product.price }}</div>
+            <div class="product-stock">Stock: {{ product.quantity }}</div>
+            <div class="product-desc">{{ product.description|truncatechars:90 }}</div>
+
+            <div class="card-actions">
+              <a href="/seller/dashboard/?edit={{ product.id }}" class="btn-small">Edit Product</a>
+
+              <form method="POST" style="margin:0;">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="delete_product">
+                <input type="hidden" name="product_id" value="{{ product.id }}">
+                <button type="submit" class="btn-danger" onclick="return confirm('Delete this product?')">Delete Product</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-box">No products found for the selected filter.</div>
+  {% endif %}
+
+  <h2 class="section-title" id="recent-orders">Recent Orders</h2>
+
+  <div class="orders-panel">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Customer</th>
+            <th>Product</th>
+            <th>Qty</th>
+            <th>City</th>
+            <th>Payment</th>
+            <th>Current Status</th>
+            <th>Update Status</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if seller_orders %}
+            {% for order in seller_orders %}
+              <tr>
+                <td>{{ order.user.username }}</td>
+                <td>{{ order.product.name }}</td>
+                <td>{{ order.quantity }}</td>
+                <td>{{ order.city }}</td>
+                <td>{{ order.payment_method }}</td>
+                <td><span class="status-badge">{{ order.get_status_display }}</span></td>
+                <td>
+                  <form method="POST" class="status-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="update_order_status">
+                    <input type="hidden" name="order_id" value="{{ order.id }}">
+                    <select name="status">
+                      {% for value, label in order_status_choices %}
+                        <option value="{{ value }}" {% if order.status == value %}selected{% endif %}>{{ label }}</option>
+                      {% endfor %}
+                    </select>
+                    <button type="submit">Update</button>
+                  </form>
+                </td>
+                <td>{{ order.created_at|date:"M d, Y h:i A" }}</td>
+              </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="8" style="text-align:center;">No recent orders for your store yet.</td>
+            </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+  const imageInput = document.getElementById("image");
+  const imagePreview = document.getElementById("imagePreview");
+  const previewText = document.getElementById("previewText");
+
+  if (imageInput) {
+    imageInput.addEventListener("change", function () {
+      const file = this.files[0];
+
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          imagePreview.src = e.target.result;
+          imagePreview.style.display = "block";
+          previewText.style.display = "none";
+        };
+        reader.readAsDataURL(file);
+      } else {
+        imagePreview.style.display = "none";
+        previewText.style.display = "block";
+      }
+    });
+  }
+</script>
+{% endblock %}

@@ -1,0 +1,739 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}QuickShop | Home{% endblock %}
+
+{% block content %}
+<style>
+  .home-page{
+    padding: 8px 0 28px;
+  }
+
+  .hero{
+    position: relative;
+    overflow: hidden;
+    border-radius: 30px;
+    padding: 42px 38px;
+    background: linear-gradient(135deg, #0f172a 0%, #1d4ed8 48%, #7c3aed 100%);
+    color: #fff;
+    box-shadow: 0 26px 60px rgba(15, 23, 42, 0.18);
+    margin-bottom: 28px;
+  }
+
+  .hero::before,
+  .hero::after{
+    content: "";
+    position: absolute;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.08);
+  }
+
+  .hero::before{
+    width: 220px;
+    height: 220px;
+    top: -70px;
+    right: -40px;
+  }
+
+  .hero::after{
+    width: 170px;
+    height: 170px;
+    left: -40px;
+    bottom: -70px;
+  }
+
+  .hero-badge{
+    display: inline-block;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.18);
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: .4px;
+    margin-bottom: 16px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero-grid{
+    display: grid;
+    grid-template-columns: 1.2fr .8fr;
+    gap: 24px;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero h1{
+    margin: 0 0 10px 0;
+    font-size: 52px;
+    line-height: 1.02;
+    font-weight: 900;
+    letter-spacing: -1px;
+  }
+
+  .hero p{
+    margin: 0;
+    max-width: 650px;
+    color: rgba(255,255,255,0.9);
+    font-size: 16px;
+    line-height: 1.9;
+    font-weight: 600;
+  }
+
+  .hero-actions{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 22px;
+  }
+
+  .hero-btn{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-decoration: none;
+    padding: 14px 18px;
+    border-radius: 16px;
+    font-weight: 900;
+    font-size: 14px;
+    transition: .18s ease;
+  }
+
+  .hero-btn.primary{
+    background: #fff;
+    color: #0f172a;
+    box-shadow: 0 12px 28px rgba(255,255,255,0.18);
+  }
+
+  .hero-btn.secondary{
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.18);
+    background: rgba(255,255,255,0.08);
+  }
+
+  .hero-btn:hover{
+    transform: translateY(-1px);
+  }
+
+  .hero-card{
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.14);
+    border-radius: 24px;
+    padding: 20px;
+    backdrop-filter: blur(8px);
+  }
+
+  .hero-card-title{
+    margin: 0 0 12px 0;
+    font-size: 18px;
+    font-weight: 900;
+  }
+
+  .hero-stat{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.12);
+    font-weight: 700;
+  }
+
+  .hero-stat:last-child{
+    border-bottom: none;
+  }
+
+  .hero-stat strong{
+    font-size: 20px;
+    font-weight: 900;
+  }
+
+  .search-panel{
+    margin-top: 20px;
+    background: #fff;
+    border-radius: 22px;
+    padding: 16px;
+    box-shadow: 0 16px 34px rgba(15, 23, 42, 0.08);
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 12px;
+  }
+
+  .search-panel input{
+    width: 100%;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    padding: 14px 16px;
+    font-size: 15px;
+    outline: none;
+    background: #f8fafc;
+  }
+
+  .search-panel input:focus{
+    border-color: #93c5fd;
+    box-shadow: 0 0 0 4px rgba(147,197,253,0.18);
+  }
+
+  .search-panel button{
+    border: none;
+    border-radius: 16px;
+    padding: 0 18px;
+    background: linear-gradient(135deg, #111827, #1d4ed8);
+    color: #fff;
+    font-weight: 900;
+    cursor: pointer;
+  }
+
+  .section-head{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 14px;
+    margin: 28px 0 16px;
+  }
+
+  .section-head h2{
+    margin: 0;
+    font-size: 32px;
+    font-weight: 900;
+    color: #0f172a;
+    letter-spacing: -.5px;
+  }
+
+  .section-head p{
+    margin: 4px 0 0 0;
+    color: #64748b;
+    font-weight: 600;
+  }
+
+  .section-link{
+    text-decoration: none;
+    font-weight: 900;
+    color: #1d4ed8;
+    white-space: nowrap;
+  }
+
+  .chips{
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+  }
+
+  .chip{
+    padding: 10px 14px;
+    border-radius: 999px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    color: #334155;
+    font-size: 13px;
+    font-weight: 800;
+    box-shadow: 0 8px 18px rgba(15,23,42,0.04);
+  }
+
+  .promo-grid{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin: 18px 0 10px;
+  }
+
+  .promo-card{
+    background: #fff;
+    border-radius: 22px;
+    padding: 20px;
+    box-shadow: 0 14px 30px rgba(15,23,42,0.06);
+    border: 1px solid rgba(15,23,42,0.05);
+  }
+
+  .promo-card .icon{
+    width: 52px;
+    height: 52px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+    background: linear-gradient(135deg, #eff6ff, #eef2ff);
+    color: #1d4ed8;
+  }
+
+  .promo-card h3{
+    margin: 0 0 8px 0;
+    font-size: 20px;
+    font-weight: 900;
+    color: #0f172a;
+  }
+
+  .promo-card p{
+    margin: 0;
+    color: #64748b;
+    line-height: 1.8;
+    font-weight: 600;
+  }
+
+  .products-grid{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+    gap: 20px;
+  }
+
+  .product-card{
+    position: relative;
+    overflow: hidden;
+    background: #fff;
+    border-radius: 24px;
+    border: 1px solid rgba(15,23,42,0.05);
+    box-shadow: 0 16px 36px rgba(15,23,42,0.07);
+    transition: .2s ease;
+  }
+
+  .product-card:hover{
+    transform: translateY(-4px);
+    box-shadow: 0 22px 42px rgba(15,23,42,0.11);
+  }
+
+  .product-media{
+    position: relative;
+    height: 320px;
+    background: linear-gradient(180deg, #f8fafc, #eef2ff);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 18px;
+  }
+
+  .product-media img{
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    display: block;
+    transition: .25s ease;
+    border-radius: 14px;
+  }
+
+  .product-card:hover .product-media img{
+    transform: scale(1.02);
+  }
+
+  .badge-row{
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    right: 14px;
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    z-index: 2;
+  }
+
+  .badge{
+    padding: 7px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: .3px;
+  }
+
+  .badge.sale{
+    background: #fee2e2;
+    color: #b91c1c;
+  }
+
+  .badge.stock{
+    background: #dcfce7;
+    color: #166534;
+  }
+
+  .quick-actions{
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 2;
+  }
+
+  .quick-actions a{
+    width: 42px;
+    height: 42px;
+    border-radius: 14px;
+    background: rgba(255,255,255,0.96);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    box-shadow: 0 10px 24px rgba(15,23,42,0.12);
+    font-size: 18px;
+  }
+
+  .product-body{
+    padding: 18px;
+  }
+
+  .product-cat{
+    display: inline-block;
+    color: #6366f1;
+    background: #eef2ff;
+    padding: 7px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: .3px;
+    margin-bottom: 10px;
+  }
+
+  .product-name{
+    margin: 0 0 8px 0;
+    font-size: 22px;
+    font-weight: 900;
+    color: #0f172a;
+    min-height: 32px;
+  }
+
+  .product-desc{
+    margin: 0 0 12px 0;
+    color: #64748b;
+    line-height: 1.7;
+    min-height: 46px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .rating-row{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .stars{
+    color: #f59e0b;
+    letter-spacing: 1px;
+    font-size: 14px;
+  }
+
+  .rating-row span{
+    color: #64748b;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .price-row{
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .price{
+    font-size: 28px;
+    font-weight: 900;
+    color: #0f172a;
+  }
+
+  .old-price{
+    font-size: 15px;
+    color: #94a3b8;
+    text-decoration: line-through;
+    font-weight: 800;
+    transform: translateY(-3px);
+  }
+
+  .delivery{
+    margin-bottom: 14px;
+    color: #475569;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.6;
+  }
+
+  .card-actions{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+  }
+
+  .card-btn{
+    text-decoration: none;
+    text-align: center;
+    padding: 12px 10px;
+    border-radius: 14px;
+    font-size: 13px;
+    font-weight: 900;
+    transition: .18s ease;
+  }
+
+  .card-btn.wish{
+    background: #fce7f3;
+    color: #be185d;
+  }
+
+  .card-btn.cart{
+    background: #dbeafe;
+    color: #1d4ed8;
+  }
+
+  .card-btn.buy{
+    background: linear-gradient(135deg, #111827, #1d4ed8);
+    color: #fff;
+  }
+
+  .card-btn:hover,
+  .details-btn:hover,
+  .section-link:hover{
+    opacity: .92;
+  }
+
+  .details-btn{
+    display: block;
+    margin-top: 12px;
+    text-decoration: none;
+    text-align: center;
+    padding: 12px 14px;
+    border-radius: 14px;
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    color: #0f172a;
+    font-weight: 900;
+  }
+
+  .empty-box{
+    background: #fff;
+    border-radius: 22px;
+    padding: 36px 24px;
+    text-align: center;
+    color: #64748b;
+    font-weight: 700;
+    box-shadow: 0 14px 30px rgba(15,23,42,0.05);
+  }
+
+  @media (max-width: 980px){
+    .hero-grid,
+    .promo-grid{
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 680px){
+    .hero{
+      padding: 30px 22px;
+    }
+
+    .hero h1{
+      font-size: 38px;
+    }
+
+    .search-panel{
+      grid-template-columns: 1fr;
+    }
+
+    .card-actions{
+      grid-template-columns: 1fr;
+    }
+
+    .product-media{
+      height: 260px;
+    }
+  }
+</style>
+
+<div class="home-page">
+  <section class="hero">
+    <span class="hero-badge">PREMIUM MARKETPLACE EXPERIENCE</span>
+
+    <div class="hero-grid">
+      <div>
+        <h1>Shop smarter with style, speed and trust.</h1>
+        <p>
+          Discover premium products from trusted sellers, save your favorites, place orders smoothly, and enjoy a polished marketplace experience built for modern shopping.
+        </p>
+
+        <div class="hero-actions">
+          <a class="hero-btn primary" href="#products">Start Shopping</a>
+          <a class="hero-btn secondary" href="/orders/">My Orders</a>
+        </div>
+      </div>
+
+      <div class="hero-card">
+        <div class="hero-card-title">QuickShop Highlights</div>
+
+        <div class="hero-stat">
+          <span>Products available</span>
+          <strong>{{ products|length }}</strong>
+        </div>
+
+        <div class="hero-stat">
+          <span>Wishlist items</span>
+          <strong>{{ wishlist_count|default:0 }}</strong>
+        </div>
+
+        <div class="hero-stat">
+          <span>Cart items</span>
+          <strong>{{ cart_count|default:0 }}</strong>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="search-panel">
+    <input type="text" id="productSearch" placeholder="Search products, categories, styles...">
+    <button type="button">Search</button>
+  </div>
+
+  <div class="section-head" style="margin-top:24px;">
+    <div>
+      <h2>Shop by Category</h2>
+      <p>Quick filters for the collections customers love most.</p>
+    </div>
+  </div>
+
+  <div class="chips">
+    <span class="chip">Men's Fashion</span>
+    <span class="chip">Women's Style</span>
+    <span class="chip">Jewelry Picks</span>
+    <span class="chip">Perfume Collection</span>
+    <span class="chip">Electronics</span>
+    <span class="chip">Top Deals</span>
+  </div>
+
+  <div class="promo-grid">
+    <div class="promo-card">
+      <div class="icon">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 3l2.4 4.86 5.36.78-3.88 3.78.92 5.34L12 15.9l-4.8 2.52.92-5.34L4.24 8.64l5.36-.78L12 3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <h3>Top Rated Picks</h3>
+      <p>Explore products customers love most with premium presentation and trusted choices.</p>
+    </div>
+
+    <div class="promo-card">
+      <div class="icon">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M6 7h12l-1 10H7L6 7Zm0 0-1-3H3M9 10v4M12 10v4M15 10v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <h3>Fast Checkout</h3>
+      <p>Move from product browsing to payment smoothly with a simple, professional purchase flow.</p>
+    </div>
+
+    <div class="promo-card">
+      <div class="icon">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M4 12h16M12 4v16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h3>Trusted Sellers</h3>
+      <p>Browse items uploaded by real sellers and discover products through a multi-vendor marketplace experience.</p>
+    </div>
+  </div>
+
+  <div class="section-head" id="products">
+    <div>
+      <h2>Featured Products</h2>
+      <p>Clean product cards with ratings, offers, stock labels and quick actions.</p>
+    </div>
+    <a class="section-link" href="/cart/">View Cart</a>
+  </div>
+
+  {% if products %}
+    <div class="products-grid" id="productsGrid">
+      {% for product in products %}
+        <div class="product-card product-item"
+             data-name="{{ product.name|lower }}"
+             data-category="{{ product.get_category_display|lower }}"
+             data-description="{{ product.description|lower }}">
+
+          <div class="product-media">
+            <div class="badge-row">
+              <span class="badge sale">20% OFF</span>
+              {% if product.quantity > 5 %}
+                <span class="badge stock">In Stock</span>
+              {% else %}
+                <span class="badge stock">Only {{ product.quantity }} left</span>
+              {% endif %}
+            </div>
+
+            {% if product.image %}
+              <img src="{{ product.image.url }}" alt="{{ product.name }}">
+            {% else %}
+              <img src="{% static 'assets/images/products/1.jpg' %}" alt="{{ product.name }}">
+            {% endif %}
+
+            <div class="quick-actions">
+              <a href="/cart/wishlist/add/{{ product.id }}/" title="Wishlist">❤️</a>
+              <a href="/cart/add/{{ product.id }}/" title="Cart">🛒</a>
+            </div>
+          </div>
+
+          <div class="product-body">
+            <span class="product-cat">{{ product.get_category_display }}</span>
+
+            <h3 class="product-name">{{ product.name }}</h3>
+
+            <p class="product-desc">{{ product.description|truncatechars:95 }}</p>
+
+            <div class="rating-row">
+              <div class="stars">★★★★☆</div>
+              <span>4.4 rating</span>
+            </div>
+
+            <div class="price-row">
+              <div class="price">₹{{ product.price }}</div>
+              <div class="old-price">₹{{ product.price|add:20 }}</div>
+            </div>
+
+            <div class="delivery">Free delivery • Trusted seller: {{ product.seller.username }}</div>
+
+            <div class="card-actions">
+              <a class="card-btn wish" href="/cart/wishlist/add/{{ product.id }}/">Wishlist</a>
+              <a class="card-btn cart" href="/cart/add/{{ product.id }}/">Add to Cart</a>
+              <a class="card-btn buy" href="/cart/buy-now/{{ product.id }}/">Buy Now</a>
+            </div>
+
+            <a class="details-btn" href="/products/detail/{{ product.id }}/">View Details</a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-box">
+      No products available yet. Ask a seller to upload products and they will appear here beautifully.
+    </div>
+  {% endif %}
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const searchInput = document.getElementById("productSearch");
+    const productItems = document.querySelectorAll(".product-item");
+
+    if (searchInput) {
+      searchInput.addEventListener("input", function () {
+        const query = this.value.toLowerCase().trim();
+
+        productItems.forEach(item => {
+          const name = item.dataset.name || "";
+          const category = item.dataset.category || "";
+          const description = item.dataset.description || "";
+
+          const match =
+            name.includes(query) ||
+            category.includes(query) ||
+            description.includes(query);
+
+          item.style.display = match ? "" : "none";
+        });
+      });
+    }
+  });
+</script>
+{% endblock %}

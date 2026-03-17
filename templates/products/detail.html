@@ -1,0 +1,587 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}{{ product.name }} | QuickShop{% endblock %}
+
+{% block content %}
+<style>
+  .detail-page{
+    padding: 8px 0 28px;
+  }
+
+  .crumbs{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+    color: #64748b;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .crumbs a{
+    text-decoration: none;
+    color: #1d4ed8;
+    font-weight: 800;
+  }
+
+  .detail-shell{
+    display: grid;
+    grid-template-columns: 1.05fr 1fr;
+    gap: 24px;
+    align-items: start;
+  }
+
+  .gallery-panel,
+  .info-panel{
+    background: #fff;
+    border-radius: 28px;
+    padding: 24px;
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+    border: 1px solid rgba(15,23,42,0.05);
+  }
+
+  .gallery-top{
+    background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+    border-radius: 24px;
+    min-height: 470px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .gallery-top img{
+    width: 100%;
+    height: 470px;
+    object-fit: cover;
+    transition: .25s ease;
+  }
+
+  .gallery-top:hover img{
+    transform: scale(1.03);
+  }
+
+  .save-float{
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 48px;
+    height: 48px;
+    border-radius: 16px;
+    background: rgba(255,255,255,0.96);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    box-shadow: 0 12px 28px rgba(15,23,42,0.12);
+    font-size: 20px;
+  }
+
+  .thumb-row{
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-top: 14px;
+  }
+
+  .thumb{
+    height: 92px;
+    border-radius: 18px;
+    overflow: hidden;
+    background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+    border: 1px solid #e5e7eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .thumb img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .cat-pill{
+    display: inline-block;
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: #eef2ff;
+    color: #4f46e5;
+    font-size: 12px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+    margin-bottom: 12px;
+  }
+
+  .product-title{
+    margin: 0 0 10px 0;
+    color: #0f172a;
+    font-size: 40px;
+    line-height: 1.05;
+    font-weight: 900;
+    letter-spacing: -.8px;
+  }
+
+  .rating-line{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+
+  .stars{
+    color: #f59e0b;
+    letter-spacing: 1px;
+    font-size: 16px;
+  }
+
+  .rating-line .score{
+    color: #0f172a;
+    font-size: 15px;
+    font-weight: 900;
+  }
+
+  .rating-line .reviews{
+    color: #64748b;
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  .price-row{
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .price{
+    font-size: 38px;
+    color: #0f172a;
+    font-weight: 900;
+    letter-spacing: -.6px;
+  }
+
+  .old-price{
+    font-size: 18px;
+    color: #94a3b8;
+    text-decoration: line-through;
+    font-weight: 800;
+    transform: translateY(-4px);
+  }
+
+  .offer-pill{
+    display: inline-block;
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: #fee2e2;
+    color: #b91c1c;
+    font-size: 12px;
+    font-weight: 900;
+    margin-bottom: 16px;
+  }
+
+  .seller-line{
+    margin-bottom: 14px;
+    color: #334155;
+    line-height: 1.8;
+    font-size: 15px;
+    font-weight: 700;
+  }
+
+  .seller-line strong{
+    color: #0f172a;
+  }
+
+  .stock-box{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .stock-pill,
+  .ship-pill{
+    padding: 9px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 900;
+  }
+
+  .stock-pill{
+    background: #dcfce7;
+    color: #166534;
+  }
+
+  .ship-pill{
+    background: #dbeafe;
+    color: #1d4ed8;
+  }
+
+  .product-desc{
+    color: #64748b;
+    font-size: 15px;
+    line-height: 1.9;
+    margin-bottom: 18px;
+    font-weight: 600;
+  }
+
+  .info-grid{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+
+  .mini-card{
+    border-radius: 18px;
+    padding: 16px;
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+  }
+
+  .mini-card h4{
+    margin: 0 0 6px 0;
+    color: #0f172a;
+    font-size: 15px;
+    font-weight: 900;
+  }
+
+  .mini-card p{
+    margin: 0;
+    color: #64748b;
+    line-height: 1.7;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .action-grid{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    margin-top: 6px;
+  }
+
+  .action-btn{
+    text-decoration: none;
+    text-align: center;
+    padding: 14px 14px;
+    border-radius: 16px;
+    font-size: 14px;
+    font-weight: 900;
+    transition: .18s ease;
+  }
+
+  .action-btn.wish{
+    background: #fce7f3;
+    color: #be185d;
+  }
+
+  .action-btn.cart{
+    background: #dbeafe;
+    color: #1d4ed8;
+  }
+
+  .action-btn.buy{
+    background: linear-gradient(135deg, #111827, #1d4ed8);
+    color: #fff;
+  }
+
+  .action-btn:hover{
+    transform: translateY(-1px);
+  }
+
+  .section-card{
+    background: #fff;
+    border-radius: 28px;
+    padding: 24px;
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.06);
+    border: 1px solid rgba(15,23,42,0.05);
+    margin-top: 24px;
+  }
+
+  .section-title{
+    margin: 0 0 14px 0;
+    font-size: 30px;
+    color: #0f172a;
+    font-weight: 900;
+    letter-spacing: -.5px;
+  }
+
+  .section-sub{
+    margin: -4px 0 18px 0;
+    color: #64748b;
+    line-height: 1.7;
+    font-weight: 600;
+  }
+
+  .review-grid{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  .review-card{
+    border-radius: 20px;
+    padding: 18px;
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+  }
+
+  .review-card h4{
+    margin: 0 0 6px 0;
+    color: #0f172a;
+    font-size: 16px;
+    font-weight: 900;
+  }
+
+  .review-card .r-stars{
+    color: #f59e0b;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+    font-size: 14px;
+  }
+
+  .review-card p{
+    margin: 0;
+    color: #64748b;
+    line-height: 1.8;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .related-grid{
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+
+  .related-card{
+    background: #fff;
+    border-radius: 22px;
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 12px 26px rgba(15,23,42,0.05);
+  }
+
+  .related-card img{
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    background: #eef2ff;
+  }
+
+  .related-body{
+    padding: 14px;
+  }
+
+  .related-body h4{
+    margin: 0 0 8px 0;
+    color: #0f172a;
+    font-size: 16px;
+    font-weight: 900;
+    min-height: 40px;
+  }
+
+  .related-body .rel-price{
+    color: #0f172a;
+    font-size: 20px;
+    font-weight: 900;
+    margin-bottom: 10px;
+  }
+
+  .related-body a{
+    display: block;
+    text-align: center;
+    text-decoration: none;
+    padding: 11px 12px;
+    border-radius: 14px;
+    background: #eef2ff;
+    color: #4338ca;
+    font-weight: 900;
+  }
+
+  @media (max-width: 1080px){
+    .detail-shell,
+    .review-grid,
+    .related-grid{
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  @media (max-width: 760px){
+    .detail-shell,
+    .info-grid,
+    .review-grid,
+    .related-grid,
+    .action-grid,
+    .thumb-row{
+      grid-template-columns: 1fr;
+    }
+
+    .product-title{
+      font-size: 32px;
+    }
+
+    .gallery-top{
+      min-height: 320px;
+    }
+
+    .gallery-top img{
+      height: 320px;
+    }
+  }
+</style>
+
+<div class="detail-page">
+  <div class="crumbs">
+    <a href="/products/">Home</a>
+    <span>›</span>
+    <span>{{ product.get_category_display }}</span>
+    <span>›</span>
+    <span>{{ product.name }}</span>
+  </div>
+
+  <div class="detail-shell">
+    <div class="gallery-panel">
+      <div class="gallery-top">
+        {% if product.image %}
+          <img src="{{ product.image.url }}" alt="{{ product.name }}">
+        {% else %}
+          <img src="https://via.placeholder.com/700x500?text=No+Image" alt="{{ product.name }}">
+        {% endif %}
+
+        <a class="save-float" href="/cart/wishlist/add/{{ product.id }}/" title="Save to wishlist">❤️</a>
+      </div>
+
+      <div class="thumb-row">
+        {% for i in "1234" %}
+          <div class="thumb">
+            {% if product.image %}
+              <img src="{{ product.image.url }}" alt="{{ product.name }}">
+            {% else %}
+              <img src="https://via.placeholder.com/300x200?text=No+Image" alt="{{ product.name }}">
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="info-panel">
+      <span class="cat-pill">{{ product.get_category_display }}</span>
+
+      <h1 class="product-title">{{ product.name }}</h1>
+
+      <div class="rating-line">
+        <div class="stars">★★★★☆</div>
+        <div class="score">4.4 / 5</div>
+        <div class="reviews">Based on 182 customer reviews</div>
+      </div>
+
+      <div class="price-row">
+        <div class="price">${{ product.price }}</div>
+        <div class="old-price">${{ product.price|add:20 }}</div>
+      </div>
+
+      <span class="offer-pill">Special Offer • Save 20% today</span>
+
+      <div class="seller-line">
+        Sold by: <strong>{{ product.seller.username }}</strong><br>
+        Category: <strong>{{ product.get_category_display }}</strong>
+      </div>
+
+      <div class="stock-box">
+        {% if product.quantity > 5 %}
+          <span class="stock-pill">In Stock • Ready to ship</span>
+        {% else %}
+          <span class="stock-pill">Only {{ product.quantity }} left in stock</span>
+        {% endif %}
+        <span class="ship-pill">Delivery in 2–4 business days</span>
+      </div>
+
+      <p class="product-desc">
+        {{ product.description }}
+      </p>
+
+      <div class="info-grid">
+        <div class="mini-card">
+          <h4>Delivery Promise</h4>
+          <p>Fast delivery slot selection, secure handling and smooth order updates after payment.</p>
+        </div>
+
+        <div class="mini-card">
+          <h4>Returns & Support</h4>
+          <p>Easy support workflow, professional seller experience and reliable order confirmation.</p>
+        </div>
+
+        <div class="mini-card">
+          <h4>Secure Checkout</h4>
+          <p>Modern payment experience with multiple payment methods and order confirmation flow.</p>
+        </div>
+
+        <div class="mini-card">
+          <h4>Trusted Marketplace</h4>
+          <p>Products are listed by sellers inside your multi-vendor QuickShop marketplace ecosystem.</p>
+        </div>
+      </div>
+
+      <div class="action-grid">
+        <a class="action-btn wish" href="/cart/wishlist/add/{{ product.id }}/">Wishlist</a>
+        <a class="action-btn cart" href="/cart/add/{{ product.id }}/">Add to Cart</a>
+        <a class="action-btn buy" href="/cart/buy-now/{{ product.id }}/">Buy Now</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <h2 class="section-title">Customer Reviews</h2>
+    <p class="section-sub">Social proof makes a product page feel much more premium and realistic.</p>
+
+    <div class="review-grid">
+      <div class="review-card">
+        <h4>Aarthi M.</h4>
+        <div class="r-stars">★★★★★</div>
+        <p>Beautiful product presentation and the quality feels premium. The delivery experience was smooth too.</p>
+      </div>
+
+      <div class="review-card">
+        <h4>Rahul K.</h4>
+        <div class="r-stars">★★★★☆</div>
+        <p>Looks exactly as expected and the product details page is very clear and helpful before ordering.</p>
+      </div>
+
+      <div class="review-card">
+        <h4>Meena S.</h4>
+        <div class="r-stars">★★★★★</div>
+        <p>Loved the product and the checkout flow. Everything feels modern and easy to understand.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <h2 class="section-title">Related Products</h2>
+    <p class="section-sub">Show more options to increase engagement and make the marketplace feel complete.</p>
+
+    <div class="related-grid">
+      {% for i in "1234" %}
+        <div class="related-card">
+          {% if product.image %}
+            <img src="{{ product.image.url }}" alt="{{ product.name }}">
+          {% else %}
+            <img src="https://via.placeholder.com/400x260?text=Related+Product" alt="Related Product">
+          {% endif %}
+
+          <div class="related-body">
+            <h4>{{ product.name }}</h4>
+            <div class="rel-price">${{ product.price }}</div>
+            <a href="/products/detail/{{ product.id }}/">View Product</a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

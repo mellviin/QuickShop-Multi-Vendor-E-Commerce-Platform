@@ -1,0 +1,496 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}My Cart | QuickShop{% endblock %}
+
+{% block content %}
+<style>
+  .cart-page{
+    padding: 8px 0 28px;
+  }
+
+  .cart-hero{
+    background: linear-gradient(135deg, #0f172a 0%, #1d4ed8 55%, #7c3aed 100%);
+    color: #fff;
+    border-radius: 30px;
+    padding: 34px 30px;
+    box-shadow: 0 22px 52px rgba(15, 23, 42, 0.16);
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cart-hero::before,
+  .cart-hero::after{
+    content: "";
+    position: absolute;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.08);
+  }
+
+  .cart-hero::before{
+    width: 220px;
+    height: 220px;
+    top: -70px;
+    right: -50px;
+  }
+
+  .cart-hero::after{
+    width: 170px;
+    height: 170px;
+    bottom: -70px;
+    left: -40px;
+  }
+
+  .cart-hero h1{
+    margin: 0 0 8px 0;
+    font-size: 42px;
+    font-weight: 900;
+    letter-spacing: -0.8px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .cart-hero p{
+    margin: 0;
+    color: rgba(255,255,255,0.9);
+    line-height: 1.8;
+    font-weight: 600;
+    position: relative;
+    z-index: 1;
+  }
+
+  .cart-layout{
+    display: grid;
+    grid-template-columns: 1.25fr 0.85fr;
+    gap: 24px;
+    align-items: start;
+  }
+
+  .cart-left,
+  .cart-right{
+    background: #fff;
+    border-radius: 26px;
+    padding: 24px;
+    box-shadow: 0 18px 38px rgba(15, 23, 42, 0.07);
+    border: 1px solid rgba(15,23,42,0.05);
+  }
+
+  .panel-title{
+    margin: 0 0 8px 0;
+    font-size: 30px;
+    font-weight: 900;
+    color: #0f172a;
+    letter-spacing: -0.5px;
+  }
+
+  .panel-sub{
+    margin: 0 0 18px 0;
+    color: #64748b;
+    line-height: 1.8;
+    font-weight: 600;
+  }
+
+  .cart-list{
+    display: grid;
+    gap: 16px;
+  }
+
+  .cart-item{
+    display: grid;
+    grid-template-columns: 120px 1fr auto;
+    gap: 16px;
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    border-radius: 22px;
+    padding: 16px;
+    align-items: center;
+  }
+
+  .cart-thumb{
+    width: 120px;
+    height: 120px;
+    border-radius: 18px;
+    overflow: hidden;
+    background: linear-gradient(180deg, #eef2ff, #f8fafc);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .cart-thumb img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .cart-info h3{
+    margin: 0 0 8px 0;
+    font-size: 22px;
+    font-weight: 900;
+    color: #0f172a;
+  }
+
+  .cart-meta{
+    color: #64748b;
+    font-size: 14px;
+    line-height: 1.8;
+    font-weight: 700;
+  }
+
+  .cart-pills{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .cart-pill{
+    padding: 8px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .cart-pill.price{
+    background: #dbeafe;
+    color: #1d4ed8;
+  }
+
+  .cart-pill.qty{
+    background: #dcfce7;
+    color: #166534;
+  }
+
+  .cart-pill.ship{
+    background: #f3e8ff;
+    color: #7e22ce;
+  }
+
+  .cart-side{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
+  }
+
+  .item-price{
+    font-size: 24px;
+    font-weight: 900;
+    color: #0f172a;
+  }
+
+  .remove-btn{
+    text-decoration: none;
+    background: #fee2e2;
+    color: #b91c1c;
+    padding: 10px 14px;
+    border-radius: 14px;
+    font-weight: 900;
+    border: 1px solid #fecaca;
+  }
+
+  .coupon-box{
+    margin-top: 18px;
+    padding: 18px;
+    border-radius: 20px;
+    border: 1px dashed #cbd5e1;
+    background: linear-gradient(180deg, #ffffff, #f8fafc);
+  }
+
+  .coupon-box h3{
+    margin: 0 0 10px 0;
+    font-size: 18px;
+    font-weight: 900;
+    color: #0f172a;
+  }
+
+  .coupon-row{
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 10px;
+  }
+
+  .coupon-row input{
+    width: 100%;
+    border: 1px solid #d1d5db;
+    border-radius: 14px;
+    padding: 13px 14px;
+    font-size: 14px;
+    background: #fff;
+    outline: none;
+  }
+
+  .coupon-row input:focus{
+    border-color: #93c5fd;
+    box-shadow: 0 0 0 4px rgba(147,197,253,0.18);
+  }
+
+  .coupon-row button{
+    border: none;
+    border-radius: 14px;
+    padding: 0 18px;
+    font-weight: 900;
+    cursor: pointer;
+    background: linear-gradient(135deg, #111827, #1d4ed8);
+    color: #fff;
+  }
+
+  .summary-card{
+    background: linear-gradient(180deg, #ffffff, #f8fafc);
+    border: 1px solid #e5e7eb;
+    border-radius: 22px;
+    padding: 20px;
+  }
+
+  .summary-line{
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 12px 0;
+    color: #334155;
+    font-weight: 700;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .summary-line:last-child{
+    border-bottom: none;
+  }
+
+  .summary-line.total{
+    padding-top: 16px;
+    margin-top: 6px;
+    color: #0f172a;
+    font-size: 20px;
+    font-weight: 900;
+  }
+
+  .green{
+    color: #16a34a;
+  }
+
+  .trust-box{
+    margin-top: 18px;
+    padding: 18px;
+    border-radius: 20px;
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+  }
+
+  .trust-box h3{
+    margin: 0 0 10px 0;
+    font-size: 18px;
+    font-weight: 900;
+    color: #0f172a;
+  }
+
+  .trust-list{
+    display: grid;
+    gap: 10px;
+  }
+
+  .trust-item{
+    font-size: 14px;
+    color: #475569;
+    font-weight: 700;
+    line-height: 1.7;
+  }
+
+  .checkout-btn{
+    display: block;
+    width: 100%;
+    text-align: center;
+    text-decoration: none;
+    margin-top: 18px;
+    padding: 16px 18px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, #111827, #1d4ed8);
+    color: #fff;
+    font-size: 17px;
+    font-weight: 900;
+    box-shadow: 0 16px 30px rgba(29,78,216,0.22);
+  }
+
+  .continue-btn{
+    display: block;
+    width: 100%;
+    text-align: center;
+    text-decoration: none;
+    margin-top: 12px;
+    padding: 14px 16px;
+    border-radius: 16px;
+    background: #eef2ff;
+    color: #4338ca;
+    font-size: 15px;
+    font-weight: 900;
+  }
+
+  .empty-cart{
+    background: #fff;
+    border-radius: 26px;
+    padding: 42px 24px;
+    text-align: center;
+    box-shadow: 0 18px 38px rgba(15, 23, 42, 0.06);
+    border: 1px solid rgba(15,23,42,0.05);
+  }
+
+  .empty-icon{
+    font-size: 68px;
+    margin-bottom: 12px;
+  }
+
+  .empty-cart h2{
+    margin: 0 0 10px 0;
+    font-size: 32px;
+    font-weight: 900;
+    color: #0f172a;
+  }
+
+  .empty-cart p{
+    margin: 0 0 18px 0;
+    color: #64748b;
+    line-height: 1.8;
+    font-weight: 600;
+  }
+
+  .empty-cart a{
+    display: inline-block;
+    text-decoration: none;
+    padding: 14px 18px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #111827, #1d4ed8);
+    color: #fff;
+    font-weight: 900;
+  }
+
+  @media (max-width: 980px){
+    .cart-layout{
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 720px){
+    .cart-item{
+      grid-template-columns: 1fr;
+    }
+
+    .cart-side{
+      align-items: flex-start;
+    }
+
+    .coupon-row{
+      grid-template-columns: 1fr;
+    }
+
+    .cart-hero h1{
+      font-size: 34px;
+    }
+  }
+</style>
+
+<div class="cart-page">
+  <div class="cart-hero">
+    <h1>Your Shopping Cart</h1>
+    <p>Review your selected products, apply offers, and move to a clean professional checkout experience.</p>
+  </div>
+
+  {% if items %}
+    <div class="cart-layout">
+      <div class="cart-left">
+        <h2 class="panel-title">Cart Items</h2>
+        <p class="panel-sub">These products are ready for checkout. You can remove items before continuing.</p>
+
+        <div class="cart-list">
+          {% for item in items %}
+            <div class="cart-item">
+              <div class="cart-thumb">
+                {% if item.product.image %}
+                  <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
+                {% else %}
+                  <img src="https://via.placeholder.com/200x200?text=No+Image" alt="{{ item.product.name }}">
+                {% endif %}
+              </div>
+
+              <div class="cart-info">
+                <h3>{{ item.product.name }}</h3>
+
+                <div class="cart-meta">
+                  Seller: {{ item.product.seller.username }}<br>
+                  Category: {{ item.product.get_category_display }}<br>
+                  Curated for a smooth QuickShop shopping experience
+                </div>
+
+                <div class="cart-pills">
+                  <span class="cart-pill price">Price: ${{ item.product.price }}</span>
+                  <span class="cart-pill qty">Quantity: {{ item.quantity }}</span>
+                  <span class="cart-pill ship">Delivery in 2–4 days</span>
+                </div>
+              </div>
+
+              <div class="cart-side">
+                <div class="item-price">${{ item.product.price }}</div>
+                <a class="remove-btn" href="/cart/remove/{{ item.id }}/">Remove</a>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+
+        <div class="coupon-box">
+          <h3>Apply Coupon</h3>
+          <div class="coupon-row">
+            <input type="text" placeholder="Enter coupon code">
+            <button type="button">Apply</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="cart-right">
+        <h2 class="panel-title">Order Summary</h2>
+        <p class="panel-sub">A polished breakdown of your order before checkout.</p>
+
+        <div class="summary-card">
+          <div class="summary-line">
+            <span>Subtotal</span>
+            <span>${{ total }}</span>
+          </div>
+
+          <div class="summary-line">
+            <span>Delivery Fee</span>
+            <span>$5</span>
+          </div>
+
+          <div class="summary-line">
+            <span>Savings</span>
+            <span class="green">- $5</span>
+          </div>
+
+          <div class="summary-line total">
+            <span>Total Payable</span>
+            <span>${{ total }}</span>
+          </div>
+        </div>
+
+        <div class="trust-box">
+          <h3>Why shop with confidence?</h3>
+
+          <div class="trust-list">
+            <div class="trust-item">✔ Secure checkout with modern payment flow</div>
+            <div class="trust-item">✔ Easy order confirmation and tracking</div>
+            <div class="trust-item">✔ Seller-backed marketplace experience</div>
+            <div class="trust-item">✔ Professional delivery address and slot selection</div>
+          </div>
+        </div>
+
+        <a class="checkout-btn" href="/orders/checkout/">Proceed to Checkout</a>
+        <a class="continue-btn" href="/products/">Continue Shopping</a>
+      </div>
+    </div>
+  {% else %}
+    <div class="empty-cart">
+      <div class="empty-icon">🛒</div>
+      <h2>Your cart is empty</h2>
+      <p>Add products from the homepage and build a beautiful shopping experience inside QuickShop.</p>
+      <a href="/products/">Start Shopping</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

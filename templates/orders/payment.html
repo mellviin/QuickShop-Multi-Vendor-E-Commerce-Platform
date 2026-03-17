@@ -1,0 +1,862 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Secure Payment | QuickShop{% endblock %}
+
+{% block content %}
+<style>
+  .payment-page{
+    padding: 10px 0 28px;
+  }
+
+  .pay-hero{
+    position: relative;
+    overflow: hidden;
+    border-radius: 30px;
+    padding: 34px 30px;
+    margin-bottom: 24px;
+    background: linear-gradient(135deg, #0f172a 0%, #1d4ed8 58%, #7c3aed 100%);
+    color: #fff;
+    box-shadow: 0 24px 56px rgba(15, 23, 42, 0.16);
+  }
+
+  .pay-hero::before,
+  .pay-hero::after{
+    content: "";
+    position: absolute;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.08);
+  }
+
+  .pay-hero::before{
+    width: 220px;
+    height: 220px;
+    top: -80px;
+    right: -50px;
+  }
+
+  .pay-hero::after{
+    width: 170px;
+    height: 170px;
+    bottom: -60px;
+    left: -40px;
+  }
+
+  .pay-hero h1{
+    position: relative;
+    z-index: 1;
+    margin: 0 0 8px 0;
+    font-size: 42px;
+    font-weight: 900;
+    letter-spacing: -0.8px;
+  }
+
+  .pay-hero p{
+    position: relative;
+    z-index: 1;
+    margin: 0;
+    color: rgba(255,255,255,0.9);
+    line-height: 1.8;
+    font-weight: 600;
+  }
+
+  .payment-shell{
+    display: grid;
+    grid-template-columns: 1.2fr 0.85fr;
+    gap: 24px;
+    align-items: start;
+  }
+
+  .payment-left,
+  .payment-right{
+    background: #fff;
+    border-radius: 26px;
+    padding: 24px;
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+    border: 1px solid rgba(15,23,42,0.05);
+  }
+
+  .panel-title{
+    margin: 0 0 8px 0;
+    font-size: 30px;
+    font-weight: 900;
+    color: #0f172a;
+    letter-spacing: -0.5px;
+  }
+
+  .panel-sub{
+    margin: 0 0 18px 0;
+    color: #64748b;
+    line-height: 1.8;
+    font-weight: 600;
+  }
+
+  .method-grid{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+
+  .method-card{
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    border-radius: 18px;
+    border: 1.5px solid #dbeafe;
+    background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+    cursor: pointer;
+    transition: .18s ease;
+    min-height: 84px;
+  }
+
+  .method-card:hover{
+    transform: translateY(-1px);
+    border-color: #93c5fd;
+    box-shadow: 0 10px 24px rgba(59,130,246,0.08);
+  }
+
+  .method-card input{
+    margin: 0;
+    width: 18px;
+    height: 18px;
+    accent-color: #2563eb;
+    flex-shrink: 0;
+  }
+
+  .method-icon{
+    width: 46px;
+    height: 46px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #eff6ff, #eef2ff);
+    color: #1d4ed8;
+    flex-shrink: 0;
+  }
+
+  .method-text strong{
+    display: block;
+    color: #0f172a;
+    font-size: 16px;
+    font-weight: 900;
+    margin-bottom: 4px;
+  }
+
+  .method-text span{
+    display: block;
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.6;
+  }
+
+  .detail-box{
+    margin-top: 8px;
+    padding: 20px;
+    border-radius: 22px;
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+    border: 1px solid #e5e7eb;
+  }
+
+  .detail-section{
+    display: none;
+  }
+
+  .detail-section.active{
+    display: block;
+  }
+
+  .detail-head{
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 16px;
+  }
+
+  .detail-head-icon{
+    width: 54px;
+    height: 54px;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #1d4ed8, #7c3aed);
+    color: #fff;
+    box-shadow: 0 12px 28px rgba(59,130,246,0.22);
+  }
+
+  .detail-head h3{
+    margin: 0 0 4px 0;
+    color: #0f172a;
+    font-size: 24px;
+    font-weight: 900;
+  }
+
+  .detail-head p{
+    margin: 0;
+    color: #64748b;
+    line-height: 1.7;
+    font-weight: 600;
+  }
+
+  .field-grid{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  .field{
+    margin-top: 12px;
+  }
+
+  .field.full{
+    grid-column: 1 / -1;
+  }
+
+  .field label{
+    display: block;
+    margin-bottom: 7px;
+    color: #0f172a;
+    font-size: 14px;
+    font-weight: 800;
+  }
+
+  .field input,
+  .field select{
+    width: 100%;
+    padding: 14px 14px;
+    border: 1px solid #d1d5db;
+    border-radius: 14px;
+    background: #fff;
+    font-size: 15px;
+    color: #111827;
+    outline: none;
+    box-sizing: border-box;
+  }
+
+  .field input:focus,
+  .field select:focus{
+    border-color: #93c5fd;
+    box-shadow: 0 0 0 4px rgba(147,197,253,0.18);
+  }
+
+  .apps-row{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 14px 0 10px 0;
+  }
+
+  .app-pill{
+    padding: 10px 14px;
+    border-radius: 999px;
+    background: #eef2ff;
+    border: 1px solid #dbeafe;
+    color: #4338ca;
+    font-size: 13px;
+    font-weight: 900;
+  }
+
+  .scanner-card{
+    margin-top: 14px;
+    padding: 18px;
+    border-radius: 22px;
+    border: 2px dashed #bfdbfe;
+    background:
+      linear-gradient(90deg, rgba(37,99,235,0.05) 1px, transparent 1px),
+      linear-gradient(rgba(37,99,235,0.05) 1px, transparent 1px),
+      linear-gradient(180deg, #eff6ff 0%, #f8fafc 100%);
+    background-size: 24px 24px, 24px 24px, cover;
+    min-height: 240px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .scanner-card::before{
+    content: "";
+    position: absolute;
+    left: 20px;
+    right: 20px;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, #2563eb, transparent);
+    box-shadow: 0 0 16px rgba(37,99,235,0.35);
+    animation: scanLine 2.1s linear infinite;
+  }
+
+  @keyframes scanLine{
+    0%{ top: 36px; opacity: 0; }
+    15%{ opacity: 1; }
+    50%{ top: 115px; opacity: 1; }
+    85%{ opacity: 1; }
+    100%{ top: 190px; opacity: 0; }
+  }
+
+  .qr-frame{
+    width: 150px;
+    height: 150px;
+    border-radius: 20px;
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 14px 30px rgba(15, 23, 42, 0.10);
+  }
+
+  .qr-frame img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .help-note{
+    margin-top: 14px;
+    color: #64748b;
+    font-size: 14px;
+    line-height: 1.8;
+    font-weight: 600;
+  }
+
+  .secure-row{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 16px;
+  }
+
+  .secure-pill{
+    padding: 9px 12px;
+    border-radius: 999px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    color: #334155;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .gateway-box{
+    margin-top: 14px;
+    padding: 18px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, #eff6ff, #eef2ff);
+    border: 1px solid #dbeafe;
+    color: #334155;
+    line-height: 1.8;
+    font-weight: 700;
+  }
+
+  .proceed-btn{
+    width: 100%;
+    margin-top: 22px;
+    border: none;
+    border-radius: 18px;
+    padding: 16px 18px;
+    font-size: 18px;
+    font-weight: 900;
+    color: #fff;
+    cursor: pointer;
+    background: linear-gradient(135deg, #111827, #1d4ed8);
+    box-shadow: 0 16px 30px rgba(29, 78, 216, 0.24);
+    transition: .18s ease;
+  }
+
+  .proceed-btn:hover{
+    transform: translateY(-1px);
+    box-shadow: 0 18px 36px rgba(29, 78, 216, 0.28);
+  }
+
+  .summary-title{
+    margin: 0 0 16px 0;
+    font-size: 30px;
+    font-weight: 900;
+    color: #0f172a;
+    letter-spacing: -0.5px;
+  }
+
+  .summary-item{
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 12px 0;
+    border-bottom: 1px solid #e5e7eb;
+    color: #334155;
+    font-weight: 700;
+    line-height: 1.6;
+  }
+
+  .summary-name{
+    flex: 1;
+  }
+
+  .summary-total{
+    margin-top: 18px;
+    padding: 18px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, #eff6ff, #eef2ff);
+    border: 1px solid #dbeafe;
+  }
+
+  .summary-total small{
+    display: block;
+    margin-bottom: 6px;
+    color: #64748b;
+    font-size: 13px;
+    font-weight: 800;
+  }
+
+  .summary-total strong{
+    font-size: 36px;
+    color: #0f172a;
+    font-weight: 900;
+    letter-spacing: -0.6px;
+  }
+
+  .summary-help{
+    margin-top: 16px;
+    color: #64748b;
+    font-size: 14px;
+    line-height: 1.8;
+    font-weight: 600;
+  }
+
+  .processing-overlay{
+    position: fixed;
+    inset: 0;
+    background: rgba(2, 6, 23, 0.78);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 18px;
+  }
+
+  .processing-card{
+    width: min(520px, 100%);
+    background: #fff;
+    border-radius: 28px;
+    padding: 30px 28px;
+    text-align: center;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.25);
+  }
+
+  .processing-icon{
+    width: 88px;
+    height: 88px;
+    margin: 0 auto 16px auto;
+    border-radius: 24px;
+    background: linear-gradient(135deg, #1d4ed8, #7c3aed);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    box-shadow: 0 16px 34px rgba(59,130,246,0.24);
+  }
+
+  .processing-icon::after{
+    content: "";
+    position: absolute;
+    inset: -10px;
+    border-radius: 30px;
+    border: 3px solid rgba(59,130,246,0.18);
+    animation: pulseRing 1.6s ease-out infinite;
+  }
+
+  @keyframes pulseRing{
+    0%{
+      transform: scale(.9);
+      opacity: .8;
+    }
+    100%{
+      transform: scale(1.25);
+      opacity: 0;
+    }
+  }
+
+  .processing-loader{
+    width: 42px;
+    height: 42px;
+    border: 4px solid rgba(255,255,255,0.28);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin{
+    to{ transform: rotate(360deg); }
+  }
+
+  .processing-card h2{
+    margin: 0 0 8px 0;
+    color: #0f172a;
+    font-size: 30px;
+    font-weight: 900;
+  }
+
+  .processing-card p{
+    margin: 0;
+    color: #64748b;
+    line-height: 1.8;
+    font-weight: 600;
+  }
+
+  .success-popup{
+    display: none;
+    margin-top: 18px;
+    padding: 18px;
+    border-radius: 18px;
+    background: #dcfce7;
+    color: #166534;
+    font-size: 22px;
+    font-weight: 900;
+    text-align: center;
+  }
+
+  @media (max-width: 980px){
+    .payment-shell{
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 720px){
+    .method-grid,
+    .field-grid{
+      grid-template-columns: 1fr;
+    }
+
+    .pay-hero h1{
+      font-size: 34px;
+    }
+  }
+</style>
+
+<div class="payment-page">
+  <div class="pay-hero">
+    <h1>Secure Payment</h1>
+    <p>Choose the payment method that works best for you and complete checkout through a clean, premium QuickShop flow.</p>
+  </div>
+
+  <div class="payment-shell">
+    <div class="payment-left">
+      <h2 class="panel-title">Choose Payment Method</h2>
+      <p class="panel-sub">Different payment methods need different details, so the form updates automatically as you select one.</p>
+
+      <form id="paymentForm" method="post" action="/orders/payment-success/">
+        {% csrf_token %}
+
+        <div class="method-grid">
+          <label class="method-card">
+            <input type="radio" name="payment_method" value="razorpay" checked>
+            <div class="method-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M4 12h16M12 4v16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="method-text">
+              <strong>Razorpay</strong>
+              <span>Gateway-style checkout experience</span>
+            </div>
+          </label>
+
+          <label class="method-card">
+            <input type="radio" name="payment_method" value="upi">
+            <div class="method-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M7 7l5 5-5 5M13 7h4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="method-text">
+              <strong>UPI</strong>
+              <span>Google Pay, PhonePe, Paytm and more</span>
+            </div>
+          </label>
+
+          <label class="method-card">
+            <input type="radio" name="payment_method" value="card">
+            <div class="method-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <rect x="3" y="6" width="18" height="12" rx="2" stroke="currentColor" stroke-width="2"/>
+                <path d="M3 10h18" stroke="currentColor" stroke-width="2"/>
+              </svg>
+            </div>
+            <div class="method-text">
+              <strong>Credit / Debit Card</strong>
+              <span>Enter card details securely</span>
+            </div>
+          </label>
+
+          <label class="method-card">
+            <input type="radio" name="payment_method" value="netbanking">
+            <div class="method-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M4 10h16M6 10V7l6-3 6 3v3M7 20v-6M12 20v-6M17 20v-6M4 20h16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="method-text">
+              <strong>Net Banking</strong>
+              <span>Select your bank and continue</span>
+            </div>
+          </label>
+
+          <label class="method-card">
+            <input type="radio" name="payment_method" value="wallet">
+            <div class="method-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M4 8a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v1h1a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1h-1v1a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8Z" stroke="currentColor" stroke-width="2"/>
+                <circle cx="17" cy="12.5" r="1" fill="currentColor"/>
+              </svg>
+            </div>
+            <div class="method-text">
+              <strong>Wallet</strong>
+              <span>Choose a supported wallet</span>
+            </div>
+          </label>
+        </div>
+
+        <div class="detail-box">
+          <div id="section-razorpay" class="detail-section active">
+            <div class="detail-head">
+              <div class="detail-head-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M4 7V5a1 1 0 0 1 1-1h2M17 4h2a1 1 0 0 1 1 1v2M20 17v2a1 1 0 0 1-1 1h-2M7 20H5a1 1 0 0 1-1-1v-2M7 8h2v2H7V8Zm4 0h2v2h-2V8Zm4 0h2v2h-2V8ZM7 12h2v2H7v-2Zm8 0h2v2h-2v-2ZM7 16h2v2H7v-2Zm4 0h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <div>
+                <h3>Razorpay Checkout</h3>
+                <p>Fast and polished payment flow with scanner support.</p>
+              </div>
+            </div>
+
+            <div class="scanner-card">
+              <div class="qr-frame">
+                <img src="{% static 'assets/images/payment-qr.png' %}" alt="Payment QR Code">
+              </div>
+            </div>
+
+            <p class="help-note">Scan the code or continue to payment to simulate a modern gateway-style checkout experience.</p>
+
+            <div class="secure-row">
+              <span class="secure-pill">Secure Gateway</span>
+              <span class="secure-pill">Protected Checkout</span>
+              <span class="secure-pill">Encrypted Flow</span>
+            </div>
+          </div>
+
+          <div id="section-upi" class="detail-section">
+            <div class="detail-head">
+              <div class="detail-head-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M7 7l5 5-5 5M13 7h4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <div>
+                <h3>UPI Payment</h3>
+                <p>Select your app or enter your UPI ID.</p>
+              </div>
+            </div>
+
+            <div class="apps-row">
+              <span class="app-pill">Google Pay</span>
+              <span class="app-pill">PhonePe</span>
+              <span class="app-pill">Paytm</span>
+              <span class="app-pill">BHIM</span>
+            </div>
+
+            <div class="field full">
+              <label for="upi_id">UPI ID</label>
+              <input id="upi_id" type="text" placeholder="example@upi">
+            </div>
+
+            <div class="scanner-card" style="min-height:220px;">
+              <div class="qr-frame">
+                <img src="{% static 'assets/images/payment-qr.png' %}" alt="UPI QR Code">
+              </div>
+            </div>
+          </div>
+
+          <div id="section-card" class="detail-section">
+            <div class="detail-head">
+              <div class="detail-head-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <rect x="3" y="6" width="18" height="12" rx="2" stroke="currentColor" stroke-width="2"/>
+                  <path d="M3 10h18" stroke="currentColor" stroke-width="2"/>
+                </svg>
+              </div>
+              <div>
+                <h3>Card Details</h3>
+                <p>Enter your debit or credit card information securely.</p>
+              </div>
+            </div>
+
+            <div class="field-grid">
+              <div class="field full">
+                <label for="card_number">Card Number</label>
+                <input id="card_number" type="text" placeholder="1234 5678 9012 3456">
+              </div>
+
+              <div class="field">
+                <label for="card_name">Name on Card</label>
+                <input id="card_name" type="text" placeholder="Cardholder name">
+              </div>
+
+              <div class="field">
+                <label for="expiry">Expiry Date</label>
+                <input id="expiry" type="text" placeholder="MM / YY">
+              </div>
+
+              <div class="field">
+                <label for="cvv">CVV</label>
+                <input id="cvv" type="password" placeholder="***">
+              </div>
+
+              <div class="field">
+                <label for="card_phone">Registered Mobile</label>
+                <input id="card_phone" type="text" placeholder="Mobile number">
+              </div>
+            </div>
+          </div>
+
+          <div id="section-netbanking" class="detail-section">
+            <div class="detail-head">
+              <div class="detail-head-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M4 10h16M6 10V7l6-3 6 3v3M7 20v-6M12 20v-6M17 20v-6M4 20h16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <div>
+                <h3>Net Banking</h3>
+                <p>Select your bank and continue to bank authorization.</p>
+              </div>
+            </div>
+
+            <div class="field full">
+              <label for="bank_name">Choose Bank</label>
+              <select id="bank_name">
+                <option value="">Select your bank</option>
+                <option>SBI</option>
+                <option>HDFC Bank</option>
+                <option>ICICI Bank</option>
+                <option>Axis Bank</option>
+                <option>Kotak Mahindra Bank</option>
+                <option>Canara Bank</option>
+                <option>Punjab National Bank</option>
+              </select>
+            </div>
+
+            <div class="gateway-box">
+              Continue with a secure simulated bank authorization flow after selecting your bank.
+            </div>
+          </div>
+
+          <div id="section-wallet" class="detail-section">
+            <div class="detail-head">
+              <div class="detail-head-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M4 8a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v1h1a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1h-1v1a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8Z" stroke="currentColor" stroke-width="2"/>
+                  <circle cx="17" cy="12.5" r="1" fill="currentColor"/>
+                </svg>
+              </div>
+              <div>
+                <h3>Wallet Payment</h3>
+                <p>Select a supported wallet to continue.</p>
+              </div>
+            </div>
+
+            <div class="apps-row">
+              <span class="app-pill">Amazon Pay</span>
+              <span class="app-pill">Paytm Wallet</span>
+              <span class="app-pill">PhonePe Wallet</span>
+              <span class="app-pill">Mobikwik</span>
+            </div>
+
+            <div class="field full">
+              <label for="wallet_mobile">Wallet Mobile Number</label>
+              <input id="wallet_mobile" type="text" placeholder="Enter wallet-linked mobile number">
+            </div>
+          </div>
+        </div>
+
+        <button class="proceed-btn" type="button" onclick="startProcessing()">Proceed to Payment</button>
+
+        <div id="successBox" class="success-popup">
+          ✅ Payment Successful! Redirecting to order confirmation...
+        </div>
+      </form>
+    </div>
+
+    <div class="payment-right">
+      <h2 class="summary-title">Payment Summary</h2>
+
+      {% for item in cart_items %}
+        <div class="summary-item">
+          <div class="summary-name">{{ item.product.name }} × {{ item.quantity }}</div>
+          <div>${{ item.product.price }}</div>
+        </div>
+      {% endfor %}
+
+      <div class="summary-total">
+        <small>Total Amount</small>
+        <strong>${{ total }}</strong>
+      </div>
+
+      <p class="summary-help">
+        Your order will be confirmed after payment processing and reflected in My Orders.
+      </p>
+    </div>
+  </div>
+</div>
+
+<div id="processingOverlay" class="processing-overlay">
+  <div class="processing-card">
+    <div class="processing-icon">
+      <div class="processing-loader"></div>
+    </div>
+    <h2>Processing Payment</h2>
+    <p>Please wait while we securely confirm your payment and prepare your order confirmation.</p>
+  </div>
+</div>
+
+<script>
+  function switchSection(method) {
+    document.querySelectorAll(".detail-section").forEach(section => {
+      section.classList.remove("active");
+    });
+
+    const selected = document.getElementById("section-" + method);
+    if (selected) {
+      selected.classList.add("active");
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const radios = document.querySelectorAll('input[name="payment_method"]');
+
+    radios.forEach(radio => {
+      radio.addEventListener("change", function () {
+        switchSection(this.value);
+      });
+    });
+
+    const checked = document.querySelector('input[name="payment_method"]:checked');
+    if (checked) {
+      switchSection(checked.value);
+    }
+  });
+
+  function startProcessing() {
+    document.getElementById("processingOverlay").style.display = "flex";
+
+    setTimeout(function () {
+      document.getElementById("processingOverlay").style.display = "none";
+      document.getElementById("successBox").style.display = "block";
+
+      setTimeout(function () {
+        document.getElementById("paymentForm").submit();
+      }, 1500);
+    }, 2800);
+  }
+</script>
+{% endblock %}

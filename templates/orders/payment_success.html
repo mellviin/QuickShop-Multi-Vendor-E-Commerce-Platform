@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Order Confirmed | QuickShop{% endblock %}
+
+{% block content %}
+<style>
+  .wrap{ max-width:760px; margin:40px auto; background:#fff; border-radius:28px; padding:34px; box-shadow:0 16px 34px rgba(0,0,0,0.08); text-align:center; }
+  .icon{ font-size:70px; margin-bottom:14px; }
+  .title{ font-size:34px; font-weight:900; margin:0 0 10px 0; }
+  .sub{ color:#6b7280; line-height:1.8; font-weight:700; }
+  .btn{ display:inline-block; margin-top:22px; padding:14px 22px; background:#111827; color:#fff; text-decoration:none; border-radius:14px; font-weight:900; }
+</style>
+
+<div class="wrap">
+  <div class="icon">🎉</div>
+  <h1 class="title">Order Confirmed Successfully</h1>
+  <p class="sub">
+    Your payment was successful and your order has been placed.<br>
+    A confirmation email has been sent to you, and the seller has also been notified.
+  </p>
+  <a class="btn" href="/orders/">Go to My Orders</a>
+</div>
+{% endblock %}

@@ -1,0 +1,500 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Login | QuickShop{% endblock %}
+
+{% block content %}
+<style>
+  .login-page {
+    min-height: 88vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 16px;
+  }
+
+  .login-shell {
+    width: 100%;
+    max-width: 1180px;
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    background: #ffffff;
+    border-radius: 28px;
+    overflow: hidden;
+    box-shadow: 0 25px 60px rgba(15, 23, 42, 0.14);
+    border: 1px solid rgba(15, 23, 42, 0.06);
+  }
+
+  .login-brand {
+    position: relative;
+    background:
+      linear-gradient(135deg, rgba(15,23,42,0.96), rgba(30,41,59,0.92)),
+      url("{% static 'assets/images/login-banner.jpg' %}") center/cover no-repeat;
+    color: white;
+    padding: 56px 44px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 680px;
+  }
+
+  .brand-top h1 {
+    margin: 0 0 12px;
+    font-size: 48px;
+    font-weight: 900;
+    letter-spacing: -0.5px;
+  }
+
+  .brand-top p {
+    margin: 0;
+    font-size: 17px;
+    line-height: 1.7;
+    color: #dbe4f0;
+    max-width: 460px;
+  }
+
+  .brand-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.14);
+    padding: 10px 16px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 800;
+    width: fit-content;
+    margin-bottom: 26px;
+    backdrop-filter: blur(6px);
+  }
+
+  .brand-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+    max-width: 420px;
+  }
+
+  .brand-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 18px;
+    padding: 16px;
+    backdrop-filter: blur(10px);
+  }
+
+  .brand-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,0.12);
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+
+  .brand-card h3 {
+    margin: 0 0 6px;
+    font-size: 17px;
+    font-weight: 800;
+    color: #fff;
+  }
+
+  .brand-card p {
+    margin: 0;
+    color: #d7deea;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .login-form-wrap {
+    padding: 54px 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(180deg, #ffffff, #f8fafc);
+  }
+
+  .login-card {
+    width: 100%;
+    max-width: 430px;
+  }
+
+  .login-mini {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #2563eb;
+    background: #eff6ff;
+    border: 1px solid #dbeafe;
+    border-radius: 999px;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: 800;
+    margin-bottom: 18px;
+  }
+
+  .auth-title {
+    margin: 0 0 10px;
+    font-size: 36px;
+    line-height: 1.15;
+    font-weight: 900;
+    color: #0f172a;
+  }
+
+  .auth-sub {
+    margin: 0 0 24px;
+    color: #64748b;
+    font-size: 15px;
+    line-height: 1.7;
+  }
+
+  .auth-error {
+    background: #fff1f2;
+    border: 1px solid #fecdd3;
+    color: #be123c;
+    padding: 12px 14px;
+    border-radius: 14px;
+    margin-bottom: 18px;
+    font-weight: 700;
+    font-size: 14px;
+  }
+
+  .role-switch {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .role-option input {
+    display: none;
+  }
+
+  .role-option label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-align: center;
+    padding: 13px 14px;
+    border-radius: 14px;
+    border: 1px solid #dbe2ea;
+    background: #f8fafc;
+    color: #0f172a;
+    font-weight: 800;
+    cursor: pointer;
+    transition: 0.2s ease;
+  }
+
+  .role-option label:hover {
+    background: #f1f5f9;
+  }
+
+  .role-option input:checked + label {
+    background: #0f172a;
+    color: #fff;
+    border-color: #0f172a;
+    box-shadow: 0 10px 20px rgba(15, 23, 42, 0.14);
+  }
+
+  .auth-group {
+    margin-bottom: 16px;
+  }
+
+  .auth-label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 800;
+    color: #0f172a;
+  }
+
+  .input-wrap {
+    position: relative;
+  }
+
+  .input-icon {
+    position: absolute;
+    top: 50%;
+    left: 14px;
+    transform: translateY(-50%);
+    font-size: 16px;
+    color: #64748b;
+    pointer-events: none;
+  }
+
+  .auth-input {
+    width: 100%;
+    padding: 14px 14px 14px 44px;
+    border: 1px solid #dbe2ea;
+    border-radius: 14px;
+    font-size: 15px;
+    outline: none;
+    background: #fff;
+    transition: 0.2s ease;
+  }
+
+  .auth-input:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.08);
+  }
+
+  .auth-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin: 8px 0 20px;
+    flex-wrap: wrap;
+  }
+
+  .remember-box {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #475569;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .remember-box input {
+    width: 16px;
+    height: 16px;
+  }
+
+  .forgot-link {
+    text-decoration: none;
+    color: #7c3aed;
+    font-weight: 800;
+    font-size: 14px;
+  }
+
+  .forgot-link:hover {
+    text-decoration: underline;
+  }
+
+  .auth-btn {
+    width: 100%;
+    border: none;
+    background: linear-gradient(135deg, #111827, #1e293b);
+    color: white;
+    padding: 15px 18px;
+    border-radius: 14px;
+    font-size: 16px;
+    font-weight: 900;
+    cursor: pointer;
+    box-shadow: 0 14px 24px rgba(15, 23, 42, 0.16);
+    transition: 0.2s ease;
+  }
+
+  .auth-btn:hover {
+    transform: translateY(-1px);
+  }
+
+  .auth-divider {
+    text-align: center;
+    position: relative;
+    margin: 22px 0 18px;
+    color: #94a3b8;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .auth-divider::before,
+  .auth-divider::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 38%;
+    height: 1px;
+    background: #e2e8f0;
+  }
+
+  .auth-divider::before {
+    left: 0;
+  }
+
+  .auth-divider::after {
+    right: 0;
+  }
+
+  .auth-links {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    color: #64748b;
+    font-size: 14px;
+    margin-top: 8px;
+  }
+
+  .auth-links a {
+    text-decoration: none;
+    font-weight: 800;
+    color: #7c3aed;
+  }
+
+  .auth-links a:hover {
+    text-decoration: underline;
+  }
+
+  .mini-note {
+    margin-top: 18px;
+    padding: 12px 14px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    color: #475569;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  @media (max-width: 980px) {
+    .login-shell {
+      grid-template-columns: 1fr;
+    }
+
+    .login-brand {
+      min-height: auto;
+      padding: 40px 28px;
+    }
+
+    .login-form-wrap {
+      padding: 40px 24px;
+    }
+
+    .brand-top h1 {
+      font-size: 40px;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .auth-title {
+      font-size: 30px;
+    }
+
+    .login-brand {
+      padding: 28px 20px;
+    }
+
+    .login-form-wrap {
+      padding: 28px 18px;
+    }
+  }
+</style>
+
+<div class="login-page">
+  <div class="login-shell">
+    <div class="login-brand">
+      <div class="brand-top">
+        <div class="brand-badge">✨ Smart shopping starts here</div>
+        <h1>Welcome to QuickShop</h1>
+        <p>
+          Discover fashion, perfume, jewelry, and electronics in one modern shopping platform.
+          Sign in to continue your shopping journey or manage your seller store.
+        </p>
+      </div>
+
+      <div class="brand-grid">
+        <div class="brand-card">
+          <div class="brand-icon">🛍️</div>
+          <div>
+            <h3>Shop Smarter</h3>
+            <p>Browse trending collections and enjoy a fast, clean e-commerce experience.</p>
+          </div>
+        </div>
+
+        <div class="brand-card">
+          <div class="brand-icon">🚚</div>
+          <div>
+            <h3>Track Orders Easily</h3>
+            <p>Stay updated on deliveries, payments, and order history with ease.</p>
+          </div>
+        </div>
+
+        <div class="brand-card">
+          <div class="brand-icon">🏬</div>
+          <div>
+            <h3>Seller Ready</h3>
+            <p>Manage products, inventory, and live order activity from your dashboard.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="login-form-wrap">
+      <div class="login-card">
+        <div class="login-mini">🔐 Secure account access</div>
+        <h1 class="auth-title">Login to your account</h1>
+        <p class="auth-sub">Choose your account type and continue to QuickShop.</p>
+
+        {% if error %}
+          <div class="auth-error">{{ error }}</div>
+        {% endif %}
+
+        <form method="post">
+          {% csrf_token %}
+
+          <div class="role-switch">
+            <div class="role-option">
+              <input type="radio" id="consumer" name="role" value="consumer"
+                     {% if selected_role != 'seller' %}checked{% endif %}>
+              <label for="consumer">👤 Consumer</label>
+            </div>
+
+            <div class="role-option">
+              <input type="radio" id="seller" name="role" value="seller"
+                     {% if selected_role == 'seller' %}checked{% endif %}>
+              <label for="seller">🏪 Seller</label>
+            </div>
+          </div>
+
+          <div class="auth-group">
+            <label class="auth-label" for="username">Email / Username</label>
+            <div class="input-wrap">
+              <span class="input-icon">✉️</span>
+              <input class="auth-input" id="username" type="text" name="username" placeholder="Enter your email or username" required>
+            </div>
+          </div>
+
+          <div class="auth-group">
+            <label class="auth-label" for="password">Password</label>
+            <div class="input-wrap">
+              <span class="input-icon">🔒</span>
+              <input class="auth-input" id="password" type="password" name="password" placeholder="Enter your password" required>
+            </div>
+          </div>
+
+          <div class="auth-row">
+            <label class="remember-box">
+              <input type="checkbox" name="remember_me">
+              <span>Remember me</span>
+            </label>
+
+            <a class="forgot-link" href="{% url 'forgot_password' %}">Forgot password?</a>
+          </div>
+
+          <button class="auth-btn" type="submit">Login</button>
+        </form>
+
+        <div class="auth-divider">OR</div>
+
+        <div class="auth-links">
+          <span>New to QuickShop?</span>
+          <a href="{% url 'register' %}">Create account</a>
+        </div>
+
+        <div class="mini-note">
+          Tip: Sellers can log in and manage products, order updates, and dashboard activity from one place.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,301 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Wishlist | QuickShop{% endblock %}
+
+{% block content %}
+<style>
+  .wishlist-page{
+    padding: 8px 0 28px;
+  }
+
+  .wishlist-head{
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: 16px;
+    margin-bottom: 18px;
+  }
+
+  .wishlist-head h1{
+    margin: 0;
+    font-size: 40px;
+    font-weight: 900;
+    color: #0f172a;
+    letter-spacing: -.6px;
+  }
+
+  .wishlist-head p{
+    margin: 6px 0 0 0;
+    color: #64748b;
+    font-weight: 600;
+  }
+
+  .wishlist-count{
+    padding: 10px 14px;
+    border-radius: 999px;
+    background: #eef2ff;
+    color: #4338ca;
+    font-size: 13px;
+    font-weight: 900;
+    white-space: nowrap;
+  }
+
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+    gap:20px;
+  }
+
+  .card{
+    background:#fff;
+    border-radius:24px;
+    overflow:hidden;
+    box-shadow:0 14px 30px rgba(0,0,0,0.08);
+    border: 1px solid rgba(15,23,42,0.05);
+    transition:.2s ease;
+  }
+
+  .card:hover{
+    transform: translateY(-4px);
+    box-shadow:0 22px 40px rgba(0,0,0,0.10);
+  }
+
+  .image-wrap{
+    width:100%;
+    height:320px;
+    background: linear-gradient(180deg, #f8fafc, #eef2ff);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+    padding:18px;
+  }
+
+  .image-wrap img{
+    max-width:100%;
+    max-height:100%;
+    width:auto;
+    height:auto;
+    object-fit:contain;
+    display:block;
+    border-radius:14px;
+  }
+
+  .body{
+    padding:18px;
+  }
+
+  .top-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+    margin-bottom:10px;
+  }
+
+  .category{
+    display:inline-block;
+    color:#6366f1;
+    background:#eef2ff;
+    padding:7px 10px;
+    border-radius:999px;
+    font-size:11px;
+    font-weight:900;
+    text-transform:uppercase;
+    letter-spacing:.3px;
+  }
+
+  .stock{
+    font-size:12px;
+    font-weight:900;
+    color:#166534;
+    background:#dcfce7;
+    padding:7px 10px;
+    border-radius:999px;
+  }
+
+  .name{
+    font-size:22px;
+    font-weight:900;
+    margin:0 0 8px 0;
+    color:#0f172a;
+  }
+
+  .desc{
+    margin:0 0 12px 0;
+    color:#64748b;
+    font-size:14px;
+    line-height:1.7;
+    min-height:44px;
+    font-weight:600;
+  }
+
+  .price-row{
+    display:flex;
+    align-items:flex-end;
+    gap:10px;
+    margin-bottom:16px;
+  }
+
+  .price{
+    font-size:28px;
+    font-weight:900;
+    color:#0f172a;
+  }
+
+  .old-price{
+    font-size:15px;
+    color:#94a3b8;
+    text-decoration:line-through;
+    font-weight:800;
+    transform: translateY(-3px);
+  }
+
+  .seller{
+    margin-bottom:16px;
+    color:#475569;
+    font-size:13px;
+    font-weight:700;
+    line-height:1.6;
+  }
+
+  .row{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+  }
+
+  .btn{
+    text-align:center;
+    padding:13px 12px;
+    border-radius:14px;
+    text-decoration:none;
+    font-weight:900;
+    font-size:14px;
+    transition:.18s ease;
+  }
+
+  .btn:hover{
+    opacity:.92;
+  }
+
+  .cart{
+    background:#dbeafe;
+    color:#1d4ed8;
+  }
+
+  .remove{
+    background:#fee2e2;
+    color:#b91c1c;
+  }
+
+  .empty-box{
+    background:#fff;
+    border-radius:24px;
+    padding:40px 24px;
+    text-align:center;
+    color:#64748b;
+    font-weight:700;
+    box-shadow:0 14px 30px rgba(15,23,42,0.05);
+  }
+
+  .empty-box h3{
+    margin:0 0 10px 0;
+    color:#0f172a;
+    font-size:24px;
+    font-weight:900;
+  }
+
+  .empty-box p{
+    margin:0 0 18px 0;
+    line-height:1.8;
+  }
+
+  .shop-btn{
+    display:inline-block;
+    text-decoration:none;
+    padding:12px 18px;
+    border-radius:14px;
+    background:linear-gradient(135deg, #111827, #1d4ed8);
+    color:#fff;
+    font-weight:900;
+  }
+
+  @media (max-width: 680px){
+    .wishlist-head{
+      flex-direction:column;
+      align-items:flex-start;
+    }
+
+    .wishlist-head h1{
+      font-size:34px;
+    }
+
+    .row{
+      grid-template-columns:1fr;
+    }
+
+    .image-wrap{
+      height:260px;
+    }
+  }
+</style>
+
+<div class="wishlist-page">
+  <div class="wishlist-head">
+    <div>
+      <h1>My Wishlist</h1>
+      <p>Save your favorite products and move them to cart anytime.</p>
+    </div>
+    <div class="wishlist-count">{{ items|length }} saved item{{ items|length|pluralize }}</div>
+  </div>
+
+  {% if items %}
+    <div class="grid">
+      {% for item in items %}
+        <div class="card">
+          <div class="image-wrap">
+            {% if item.product.image %}
+              <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
+            {% else %}
+              <img src="{% static 'assets/images/products/1.jpg' %}" alt="{{ item.product.name }}">
+            {% endif %}
+          </div>
+
+          <div class="body">
+            <div class="top-row">
+              <span class="category">{{ item.product.get_category_display }}</span>
+              {% if item.product.quantity > 5 %}
+                <span class="stock">In Stock</span>
+              {% else %}
+                <span class="stock">Only {{ item.product.quantity }} left</span>
+              {% endif %}
+            </div>
+
+            <h3 class="name">{{ item.product.name }}</h3>
+            <p class="desc">{{ item.product.description|truncatechars:90 }}</p>
+
+            <div class="price-row">
+              <div class="price">₹{{ item.product.price }}</div>
+              <div class="old-price">₹{{ item.product.price|add:20 }}</div>
+            </div>
+
+            <div class="seller">Trusted seller: {{ item.product.seller.username }}</div>
+
+            <div class="row">
+              <a class="btn cart" href="/cart/add/{{ item.product.id }}/">Add to Cart</a>
+              <a class="btn remove" href="/cart/wishlist/remove/{{ item.id }}/">Remove</a>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-box">
+      <h3>Your wishlist is empty</h3>
+      <p>Browse products, save the ones you love, and they will appear here beautifully.</p>
+      <a href="/products/" class="shop-btn">Continue Shopping</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

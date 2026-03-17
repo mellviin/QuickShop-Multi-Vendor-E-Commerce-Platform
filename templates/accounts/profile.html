@@ -1,0 +1,312 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}My Profile | QuickShop{% endblock %}
+
+{% block content %}
+<style>
+  .profile-page{
+    padding: 10px 0 30px;
+  }
+
+  .profile-hero{
+    background: linear-gradient(135deg, #0f172a, #1d4ed8, #7c3aed);
+    color: white;
+    border-radius: 28px;
+    padding: 34px 30px;
+    margin-bottom: 24px;
+    box-shadow: 0 20px 45px rgba(15, 23, 42, 0.16);
+  }
+
+  .profile-hero h1{
+    margin: 0 0 10px;
+    font-size: 38px;
+    font-weight: 900;
+  }
+
+  .profile-hero p{
+    margin: 0;
+    color: rgba(255,255,255,0.9);
+    font-weight: 600;
+    line-height: 1.8;
+  }
+
+  .profile-grid{
+    display: grid;
+    grid-template-columns: 0.9fr 1.1fr;
+    gap: 22px;
+  }
+
+  .card{
+    background: #fff;
+    border-radius: 24px;
+    padding: 24px;
+    box-shadow: 0 14px 30px rgba(15,23,42,0.07);
+    border: 1px solid rgba(15,23,42,0.05);
+  }
+
+  .profile-summary{
+    text-align: center;
+  }
+
+  .avatar{
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    margin: 0 auto 16px;
+    background: linear-gradient(135deg, #111827, #1d4ed8);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 34px;
+    font-weight: 900;
+  }
+
+  .profile-summary h2{
+    margin: 0 0 6px;
+    font-size: 26px;
+    font-weight: 900;
+    color: #0f172a;
+  }
+
+  .profile-summary p{
+    margin: 0 0 18px;
+    color: #64748b;
+    font-weight: 600;
+  }
+
+  .role-badge{
+    display: inline-block;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: #eef2ff;
+    color: #4338ca;
+    font-size: 13px;
+    font-weight: 900;
+    margin-bottom: 18px;
+    text-transform: uppercase;
+  }
+
+  .stats{
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-top: 16px;
+  }
+
+  .stat-box{
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    border-radius: 18px;
+    padding: 16px;
+  }
+
+  .stat-box .label{
+    color: #64748b;
+    font-size: 13px;
+    font-weight: 800;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .stat-box .value{
+    color: #0f172a;
+    font-size: 28px;
+    font-weight: 900;
+  }
+
+  .form-title{
+    margin: 0 0 18px;
+    font-size: 26px;
+    font-weight: 900;
+    color: #0f172a;
+  }
+
+  .form-grid{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .form-group{
+    display: flex;
+    flex-direction: column;
+  }
+
+  .form-group.full{
+    grid-column: 1 / -1;
+  }
+
+  label{
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 800;
+    color: #334155;
+  }
+
+  input{
+    width: 100%;
+    padding: 13px 14px;
+    border: 1px solid #dbe2ea;
+    background: #f8fafc;
+    border-radius: 14px;
+    font-size: 15px;
+    outline: none;
+  }
+
+  input:focus{
+    border-color: #2563eb;
+    background: white;
+    box-shadow: 0 0 0 4px rgba(37,99,235,0.08);
+  }
+
+  .save-btn{
+    border: none;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #111827, #1d4ed8);
+    color: white;
+    padding: 14px 18px;
+    font-size: 15px;
+    font-weight: 900;
+    cursor: pointer;
+  }
+
+  .info-list{
+    margin-top: 18px;
+    display: grid;
+    gap: 12px;
+  }
+
+  .info-item{
+    background: #f8fafc;
+    border-radius: 16px;
+    padding: 14px 16px;
+    border: 1px solid #e5e7eb;
+  }
+
+  .info-item strong{
+    display: block;
+    font-size: 12px;
+    color: #64748b;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .info-item span{
+    font-size: 15px;
+    color: #0f172a;
+    font-weight: 700;
+  }
+
+  @media (max-width: 900px){
+    .profile-grid{
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 650px){
+    .form-grid{
+      grid-template-columns: 1fr;
+    }
+
+    .profile-hero h1{
+      font-size: 30px;
+    }
+  }
+</style>
+
+<div class="profile-page">
+  <div class="profile-hero">
+    <h1>My Profile</h1>
+    <p>Manage your personal details, view your shopping activity, and keep your QuickShop account updated.</p>
+  </div>
+
+  <div class="profile-grid">
+    <div class="card profile-summary">
+      <div class="avatar">
+        {{ request.user.username|slice:":1"|upper }}
+      </div>
+
+      <h2>
+        {% if request.user.first_name %}
+          {{ request.user.first_name }} {{ request.user.last_name }}
+        {% else %}
+          {{ request.user.username }}
+        {% endif %}
+      </h2>
+
+      <p>{{ request.user.email|default:"No email added" }}</p>
+
+      <div class="role-badge">{{ profile_obj.role }}</div>
+
+      <div class="stats">
+        <div class="stat-box">
+          <div class="label">Orders Placed</div>
+          <div class="value">{{ total_orders }}</div>
+        </div>
+
+        <div class="stat-box">
+          <div class="label">Wishlist Items</div>
+          <div class="value">{{ wishlist_count }}</div>
+        </div>
+
+        <div class="stat-box">
+          <div class="label">Cart Items</div>
+          <div class="value">{{ cart_count }}</div>
+        </div>
+      </div>
+
+      <div class="info-list">
+        <div class="info-item">
+          <strong>Username</strong>
+          <span>{{ request.user.username }}</span>
+        </div>
+
+        <div class="info-item">
+          <strong>Mobile Number</strong>
+          <span>{{ profile_obj.phone|default:"Not added yet" }}</span>
+        </div>
+
+        <div class="info-item">
+          <strong>Joined On</strong>
+          <span>{{ request.user.date_joined|date:"M d, Y" }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 class="form-title">Update Personal Details</h2>
+
+      <form method="POST">
+        {% csrf_token %}
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="first_name">First Name</label>
+            <input type="text" id="first_name" name="first_name" value="{{ request.user.first_name }}">
+          </div>
+
+          <div class="form-group">
+            <label for="last_name">Last Name</label>
+            <input type="text" id="last_name" name="last_name" value="{{ request.user.last_name }}">
+          </div>
+
+          <div class="form-group full">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" name="email" value="{{ request.user.email }}">
+          </div>
+
+          <div class="form-group full">
+            <label for="phone">Mobile Number</label>
+            <input type="text" id="phone" name="phone" value="{{ profile_obj.phone }}">
+          </div>
+
+          <div class="form-group full">
+            <button type="submit" class="save-btn">Save Changes</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
